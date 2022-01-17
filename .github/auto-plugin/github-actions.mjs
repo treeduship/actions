@@ -11,13 +11,9 @@ export default class LatestTagPlugin {
    * @param {import('@auto-it/core').default} auto
    */
   apply(auto) {
-    auto.hooks.afterRelease.tap(
+    auto.hooks.afterRelease.tapPromise(
       "github-actions",
-      ({ lastRelease, newVersion, releaseNotes }) => {
-        if (lastRelease === newVersion) {
-          return;
-        }
-
+      async ({ lastRelease, newVersion, releaseNotes }) => {
         setOutput("hasNewRelease", true);
         setOutput("lastRelease", lastRelease);
         setOutput("newVersion", newVersion);
