@@ -1,10 +1,9 @@
 // @ts-check
-import { globbyStream } from "globby";
-import { parse } from "semver";
-import { parse as parsePath } from "path";
-import { readFile, writeFile } from "fs/promises";
+const { parse } = require("semver");
+const { parse: parsePath } = require("path");
+const { readFile, writeFile } = require("fs/promises");
 
-export default class LatestTagPlugin {
+module.exports = class LatestTagPlugin {
   constructor() {
     this.name = "bump-docs";
   }
@@ -14,6 +13,7 @@ export default class LatestTagPlugin {
    */
   apply(auto) {
     auto.hooks.afterRelease.tapAsync("bump-docs", async ({ newVersion }) => {
+      const { globbyStream } = await import('globby');
       for await (const filePath of globbyStream("**/*.md", { deep: 2 })) {
         const { dir } = parsePath(filePath.toString());
         if (dir === "") {
@@ -26,7 +26,7 @@ export default class LatestTagPlugin {
       }
     });
   }
-}
+};
 
 /**
  * @param {import("fs").PathLike} filePath
