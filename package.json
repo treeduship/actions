@@ -28,7 +28,7 @@
     "@auto-it/exec": "^10.32.5",
     "@auto-it/git-tag": "10.32.5",
     "@auto-it/released": "10.32.5",
-    "@types/node": "14.14.37",
+    "@types/node": "16.11.20",
     "@vercel/ncc": "0.33.1",
     "auto": "10.32.5",
     "execa": "6.0.0",
