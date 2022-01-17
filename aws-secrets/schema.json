@@ -1,0 +1,75 @@
+{
+  "$ref": "#/definitions/Secrets",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Secret": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "allowEmpty": {
+              "type": "boolean"
+            },
+            "jsonpath": {
+              "type": "string"
+            },
+            "options": {
+              "additionalProperties": false,
+              "properties": {
+                "region": {
+                  "type": "string"
+                }
+              },
+              "required": ["region"],
+              "type": "object"
+            },
+            "ssm": {
+              "type": "string"
+            }
+          },
+          "required": ["ssm"],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "allowEmpty": {
+              "type": "boolean"
+            },
+            "jsonpath": {
+              "type": "string"
+            },
+            "options": {
+              "additionalProperties": false,
+              "properties": {
+                "region": {
+                  "type": "string"
+                }
+              },
+              "required": ["region"],
+              "type": "object"
+            },
+            "secretsManager": {
+              "type": "string"
+            }
+          },
+          "required": ["secretsManager"],
+          "type": "object"
+        }
+      ]
+    },
+    "Secrets": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "$ref": "#/definitions/Secret"
+          }
+        ]
+      },
+      "type": "object"
+    }
+  }
+}

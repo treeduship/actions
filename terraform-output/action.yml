@@ -39,5 +39,5 @@ inputs:
     description: A unique context id if you have multiple terraform output actions running.
     required: false
 runs:
-  using: node12
-  main: dist/index.js
+  using: node16
+  main: dist/index.mjs

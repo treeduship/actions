@@ -1,0 +1,27 @@
+name: AWS Setup
+description: Setup AWS
+inputs:
+  env:
+    description: Env to setup
+    required: false
+    default: dev
+  accounts:
+    description: AWS Account Map
+    required: true
+    default: ${{ secrets.AWS_ACCOUNTS }}
+  region:
+    description: AWS Region
+    required: true
+    default: us-east-1
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: arn:aws:iam::${{ fromJSON(inputs.accounts)[inputs.env]["id"] }}:role/github/all/${{ fromJSON(inputs.accounts)[inputs.env]["name"] }}-gha-deployer
+        aws-region: ${{ inputs.region }}
+    - name: Set Secrets
+      uses: uShip/actions/aws-secrets@main
+      with:
+        environment: ${{ inputs.env }}

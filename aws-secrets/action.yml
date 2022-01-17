@@ -1,0 +1,20 @@
+name: Terraform Output
+description: Takes in terraform command outputs and status and outputs a pretty summary
+branding:
+  icon: aperture
+  color: blue
+inputs:
+  secrets:
+    description: The secrets to pull as inline yaml.
+    required: false
+  secrets-file:
+    description: The secrets to pull.
+    required: false
+    default: ""
+  fail-if-empty:
+    description: Whether or not to fail action if either the retrieved value or resolved jsonpath is empty.
+    required: false
+    default: ""
+runs:
+  using: node16
+  main: dist/index.mjs
