@@ -1,3 +1,24 @@
+# v1.2.0 (Mon Jan 17 2022)
+
+#### 🚀 Enhancement
+
+- feat: convert to esm/esbuild and add aws actions (rsimpon@uship.com)
+
+#### 🐛 Bug Fix
+
+- fix: convert plugins to es modules (rsimpon@uship.com)
+- fix: cjs the auto files (rsimpon@uship.com)
+- fix: update dependencies (rsimpon@uship.com)
+- chore(deps): update dependency lint-staged to v11 [#25](https://github.com/uShip/actions/pull/25) ([@renovate-bot](https://github.com/renovate-bot) [@renovate[bot]](https://github.com/renovate[bot]))
+
+#### Authors: 3
+
+- [@renovate[bot]](https://github.com/renovate[bot])
+- Richard Simpson (rsimpon@uship.com)
+- WhiteSource Renovate ([@renovate-bot](https://github.com/renovate-bot))
+
+---
+
 # v1.1.6 (Thu Apr 15 2021)
 
 #### 🐛 Bug Fix
