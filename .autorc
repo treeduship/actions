@@ -3,8 +3,8 @@
     "git-tag",
     "conventional-commits",
     "released",
-    "./.github/auto-plugin/github-actions.js",
-    "./.github/auto-plugin/bump-docs.js",
+    "./.github/auto-plugin/github-actions.cjs",
+    "./.github/auto-plugin/bump-docs.cjs"
   ],
   "owner": "uShip",
   "repo": "actions",
