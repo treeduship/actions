@@ -1,3 +1,16 @@
+# v1.2.2 (Mon Jan 17 2022)
+
+#### 🐛 Bug Fix
+
+- fix: use cjs plugins again, try import esm (rsimpon@uship.com)
+- fix: richard is a potato (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.2.1 (Mon Jan 17 2022)
 
 #### 🐛 Bug Fix
