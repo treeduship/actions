@@ -3,7 +3,7 @@
 This action assists in loading and setting secrets from AWS Systems Manager Parameter Store and AWS Secrets Manager.
 
 ```yml
-      - uses: uShip/actions/aws-secrets@main
+      - uses: uShip/actions/aws-secrets@v1
         with:
           # Inline secrets file. Read below for the full format
           secrets: |
@@ -75,7 +75,7 @@ environments:
 ```yaml
 # .github/workflows/my-cool-workflow.yml
 # ...
-    - uses: uship/actions/aws-secrets@main
+    - uses: uShip/actions/aws-secrets@v1
       with:
         environment: dev
         fail-if-empty: true
@@ -84,7 +84,7 @@ environments:
 # env.COOL_SECRET -> *****
 
 # ...
-    - uses: uship/actions/aws-secrets@main
+    - uses: uShip/actions/aws-secrets@v1
       with:
         environment: prod
         fail-if-empty: true
