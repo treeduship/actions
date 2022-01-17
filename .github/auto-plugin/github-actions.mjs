@@ -1,7 +1,8 @@
-const { setOutput } = require("@actions/core");
-const { parse } = require("semver");
+// @ts-check
+import { setOutput } from "@actions/core";
+import { parse } from "semver";
 
-module.exports = class LatestTagPlugin {
+export default class LatestTagPlugin {
   constructor() {
     this.name = "github-actions";
   }
@@ -27,4 +28,4 @@ module.exports = class LatestTagPlugin {
       }
     );
   }
-};
+}

@@ -1,9 +1,10 @@
-const globby = require("globby");
-const { parse, diff } = require("semver");
-const { parse: parsePath } = require("path");
-const { readFile, writeFile } = require("fs/promises");
+// @ts-check
+import { globbyStream } from "globby";
+import { parse } from "semver";
+import { parse as parsePath } from "path";
+import { readFile, writeFile } from "fs/promises";
 
-module.exports = class LatestTagPlugin {
+export default class LatestTagPlugin {
   constructor() {
     this.name = "bump-docs";
   }
@@ -13,8 +14,8 @@ module.exports = class LatestTagPlugin {
    */
   apply(auto) {
     auto.hooks.afterRelease.tapAsync("bump-docs", async ({ newVersion }) => {
-      for await (const filePath of globby.stream("**/*.md", { deep: 2 })) {
-        const { dir } = parsePath(filePath);
+      for await (const filePath of globbyStream("**/*.md", { deep: 2 })) {
+        const { dir } = parsePath(filePath.toString());
         if (dir === "") {
           continue;
         }
@@ -25,8 +26,13 @@ module.exports = class LatestTagPlugin {
       }
     });
   }
-};
+}
 
+/**
+ * @param {import("fs").PathLike} filePath
+ * @param {string} action
+ * @param {string} version
+ */
 async function bumpDocsVersion(filePath, action, version) {
   console.log({ filePath });
   const mdContents = await readFile(filePath);
