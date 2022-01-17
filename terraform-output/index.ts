@@ -53,16 +53,19 @@ async function run() {
         );
         const hasWarnings = noAscii.includes("Warning");
         if (hasChanges) {
-          const counts = /Plan: (?<add>\d+) to add, (?<change>\d+) to change, (?<destroy>\d+) to destroy/.exec(
-            noAscii
-          );
+          const counts =
+            /Plan: (?<add>\d+) to add, (?<change>\d+) to change, (?<destroy>\d+) to destroy/.exec(
+              noAscii
+            );
           if (counts) {
             const { add, change, destroy } = counts.groups!;
-            const countText = ([
-              ["+", Number.parseInt(add, 10)],
-              ["~", Number.parseInt(change, 10)],
-              ["-", Number.parseInt(destroy, 10)],
-            ] as const)
+            const countText = (
+              [
+                ["+", Number.parseInt(add, 10)],
+                ["~", Number.parseInt(change, 10)],
+                ["-", Number.parseInt(destroy, 10)],
+              ] as const
+            )
               .filter(([_, count]) => count > 0)
               .map(([icon, count]) => `${icon}${count}`)
               .join(", ");
@@ -132,7 +135,7 @@ ${stripAnsi(error.trim()) || "N/A"}
       });
     }
   } catch (e) {
-    setFailed(e);
+    setFailed(e as Error);
   }
 }
 run();
