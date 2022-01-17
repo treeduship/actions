@@ -1,3 +1,15 @@
+# v1.2.1 (Mon Jan 17 2022)
+
+#### 🐛 Bug Fix
+
+- fix: why did i add this check? (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.2.0 (Mon Jan 17 2022)
 
 #### 🚀 Enhancement
