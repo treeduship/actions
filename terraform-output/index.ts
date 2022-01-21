@@ -113,16 +113,20 @@ async function parseLog(
   logName: string
 ): Promise<{ table: string; stdout: string; stderr: string }> {
   if (!existsSync(logName)) {
-    if (result?.outcome !== "failure") {
+    if (
+      result?.outcome !== "failure" &&
+      !["init", "fmt", "validate"].includes(stepName)
+    ) {
       warning(`Failed to read log file ${logName} for step ${stepName}.`);
     }
     return {
       table: `\n| \`${stepName}\` |   "✖"   |`,
       stdout: "",
-      stderr: "Failed to read log file",
+      stderr: "Failed to read log file. Refer to step output in Workflow logs.",
     };
   }
 
+  // TODO: Validate has it's whole own JSON output format, support that.
   let table = "";
   let stdout: string[] = [];
   let stderr: string[] = [];
