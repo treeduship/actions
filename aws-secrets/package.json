@@ -2,10 +2,10 @@
   "name": "aws-secrets",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "generate-schema": "ts-json-schema-generator --path index.ts --type Secrets --tsconfig tsconfig.json > schema.json",
-    "build": "esbuild index.ts --bundle --minify --platform=node --target=node16 --format=esm --sourcemap --outfile=dist/index.mjs"
+    "build": "esbuild index.ts --bundle --minify --platform=node --target=node16 --format=cjs --sourcemap --outfile=dist/index.cjs"
   },
   "dependencies": {
     "@actions/core": "1.6.0",

@@ -4,9 +4,9 @@
   "private": true,
   "author": "uShip",
   "license": "ISC",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
-    "build": "esbuild index.ts --bundle --minify --platform=node --target=node16 --format=esm --sourcemap --outfile=dist/index.mjs"
+    "build": "esbuild index.ts --bundle --minify --platform=node --target=node16 --format=cjs --sourcemap --outfile=dist/index.cjs"
   },
   "dependencies": {
     "@actions/core": "1.6.0",
