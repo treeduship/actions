@@ -1,3 +1,15 @@
+# v1.2.5 (Fri Jan 21 2022)
+
+#### ⚠️ Pushed to `main`
+
+- revert esm changes :< (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.2.4 (Fri Jan 21 2022)
 
 #### ⚠️ Pushed to `main`
