@@ -4,6 +4,7 @@ import { getOctokit } from "@actions/github";
 import { createOrUpdatePRComment } from "@uship/actions-helpers/comment";
 import { default as stripAnsi } from "strip-ansi";
 import { createReadStream, existsSync } from "node:fs";
+import { resolve } from "node:path";
 import split2 from "split2";
 
 interface TfStep {
@@ -229,6 +230,7 @@ async function run() {
     ]);
 
     const contextId = getInput("context");
+    const cwd = getInput("working-directory") ?? "./";
 
     const now = new Intl.DateTimeFormat("en-US", {
       dateStyle: "medium",
@@ -245,7 +247,7 @@ async function run() {
     const stepResults = new Map<string, { stdout: string; stderr: string }>();
     for (const [name, result] of tfSteps) {
       const { table, stdout, stderr } = readJson
-        ? await parseLog(name, result, `${name}.log`)
+        ? await parseLog(name, result, resolve(cwd, `${name}.log`))
         : await parseStdout(name, result);
       stepTable += table;
       stepResults.set(name, { stdout, stderr });
@@ -260,7 +262,7 @@ async function run() {
     let errorMd = "";
     if (error?.trim() !== "") {
       errorMd = `
-      stderr:
+stderr:
 \`\`\`
 ${planStep?.stderr.trim() || "N/A"}
 \`\`\``;
@@ -272,8 +274,7 @@ ${stepTable}
 
 <details><summary><b>Plan Output</b></summary>
 
-\`\`\`${planOut ?? "\n"}\`\`\`
-
+\`\`\`${planOut ?? "\n-\n"}\`\`\`
 ${errorMd}
 </details>
 

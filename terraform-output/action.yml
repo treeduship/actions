@@ -42,6 +42,9 @@ inputs:
   context:
     description: A unique context id if you have multiple terraform output actions running.
     required: false
+  working-directory:
+    description: The directory where log files are outputted
+    required: false
 runs:
   using: node16
   main: dist/index.cjs
