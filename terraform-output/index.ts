@@ -114,6 +114,7 @@ async function parseLog(
 ): Promise<{ table: string; stdout: string; stderr: string }> {
   if (!existsSync(logName)) {
     if (
+      result?.outcome &&
       result?.outcome !== "failure" &&
       !["init", "fmt", "validate"].includes(stepName)
     ) {
@@ -126,7 +127,9 @@ async function parseLog(
       };
     }
     return {
-      table: `\n| \`${stepName}\` | ❌ |`,
+      table: `\n| \`${stepName}\` | ${
+        result?.outcome === "failure" ? "❌" : "-"
+      } |`,
       stdout: "",
       stderr: "",
     };
