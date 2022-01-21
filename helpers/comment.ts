@@ -17,7 +17,7 @@ export async function createOrUpdatePRComment({
   body,
   octokit,
 }: PRCommentOptions) {
-  const { data: comments } = await octokit.issues.listComments({
+  const { data: comments } = await octokit.rest.issues.listComments({
     issue_number: prId,
     owner,
     repo,
@@ -31,14 +31,14 @@ export async function createOrUpdatePRComment({
   body = `<!-- ${commentId} -->\n\n` + body;
 
   if (comment) {
-    octokit.issues.updateComment({
+    octokit.rest.issues.updateComment({
       owner,
       repo,
       comment_id: comment.id,
       body,
     });
   } else {
-    octokit.issues.createComment({
+    octokit.rest.issues.createComment({
       issue_number: prId,
       owner,
       repo,
