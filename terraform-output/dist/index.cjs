@@ -19,7 +19,7 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``)}g.g
 | \`${r}\` |  ${(e==null?void 0:e.outcome)=="success"?"\u2714":"\u2716"}   |`;return r!=="plan"&&(e==null?void 0:e.outcome)=="success"&&(s+=Ke(((n=e.outputs)==null?void 0:n.stdout)??"")),(e==null?void 0:e.outcome)==="failure"&&(o+=Ke(((i=e.outputs)==null?void 0:i.stderr)??"")),{table:t,stdout:s,stderr:o}}async function sc(r,e,t){if(!(0,gr.existsSync)(t)){if((e==null?void 0:e.outcome)&&(e==null?void 0:e.outcome)!=="failure"&&!["init","fmt","validate","show"].includes(r))return(0,G.warning)(`Failed to read log file ${t} for step ${r}.`),{table:`
 | \`${r}\` | \u274C |`,stdout:"",stderr:"Failed to read log file. Refer to step output in Workflow logs."};let i;switch(e==null?void 0:e.outcome){case"failure":i="\u274C";break;case"success":i="\u2714\uFE0F";break;default:i="-";break}return{table:`
 | \`${r}\` | ${i} |`,stdout:"",stderr:""}}let s="",o=[],n=[];switch(r){case"plan":{let i=!1,a=(0,gr.createReadStream)(t).pipe((0,hn.default)());for await(let u of a){if((u??"").trim()==="")continue;if(!u.startsWith("{")){(0,G.warning)(`Assuming non-JSON line from log file ${t} is error.
-${u}.`),n.push(u);continue}let c;try{c=JSON.parse(u)}catch(l){throw new Error(`Failed to parse log lines for ${t}. ${l}`)}switch(c["@level"]!=="error"?o.push(c["@message"]):n.push(c["@message"]),(c["@level"]==="warning"||c.type==="resource_drift")&&(i=!0),c.type){case"change_summary":{let{add:l,change:d,remove:p}=c.changes;if(l+d+p===0){s+=`
+${u}.`),n.push(u);continue}let c;try{c=JSON.parse(u)}catch(l){throw new Error(`Failed to parse log lines for ${t}. ${l}`)}switch(c["@level"]=="error"&&n.push(c["@message"]),(c["@level"]==="warning"||c.type==="resource_drift")&&(i=!0),c.type){case"change_summary":{let{add:l,change:d,remove:p}=c.changes;if(l+d+p===0){s+=`
 | \`${r}\` | \u2796${i?"*":""} |`;continue}let m=[["+",l],["~",d],["-",p]].filter(([E,_])=>_>0).map(([E,_])=>`${E}${_}`).join(", ");s+=`
 | \`${r}\` | ${m}${i?"*":""} |`}break}}}break;case"show":{let i=JSON.parse((await(0,En.readFile)(t)).toString());o.push(""),o.push(`changes:
 `);for(let a of i.resource_changes)o.push(`${a.previous_address?a.previous_address+" => ":""}${a.address} (${a.action_reason??"changed"}):`),o.push(JSON.stringify(a.change,null,2)),o.push(`
@@ -41,7 +41,7 @@ ${u}
 
 <details><summary><b>Plan Output</b></summary>
 ${p==null?void 0:p.stdout}
-stdout:
+additional stdout:
 \`\`\`
 ${(d==null?void 0:d.stdout)??"No plan available. Check stderr or workflow logs."}
 \`\`\`
