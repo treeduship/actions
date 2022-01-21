@@ -39,9 +39,9 @@ ${u}
 
 <details><summary><b>Plan Output</b></summary>
 
-\`\`\`${c??`
--
-`}\`\`\`
+\`\`\`
+${c??"No plan available. Check stderr or workflow logs."}
+\`\`\`
 ${m}
 </details>
 

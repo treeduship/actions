@@ -274,7 +274,9 @@ ${stepTable}
 
 <details><summary><b>Plan Output</b></summary>
 
-\`\`\`${planOut ?? "\n-\n"}\`\`\`
+\`\`\`
+${planOut ?? "No plan available. Check stderr or workflow logs."}
+\`\`\`
 ${errorMd}
 </details>
 
