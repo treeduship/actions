@@ -244,7 +244,6 @@ async function run() {
 |----|----|`;
 
     let planStdout = "";
-    let planContents = "";
     let error = "";
     const stepResults = new Map<string, { stdout: string; stderr: string }>();
     for (const [name, result] of tfSteps) {
@@ -257,11 +256,6 @@ async function run() {
       if (name === "plan") {
         planStdout = stdout;
       }
-    }
-
-    const tfplan = resolve(cwd, "tfplan.log");
-    if (existsSync(tfplan)) {
-      planContents = (await readFile(tfplan)).toString();
     }
 
     const planStep = stepResults.get("plan");
@@ -283,11 +277,6 @@ ${stepTable}
 
 \`\`\`
 ${planStdout ?? "No plan available. Check stderr or workflow logs."}
-\`\`\`
-
-plan contents:
-\`\`\`
-${planContents?.trim() || "N/A"}
 \`\`\`
 
 ${errorMd}
