@@ -306,6 +306,8 @@ async function run() {
     const planStep = stepResults.get("plan");
     const showStep = stepResults.get("show");
 
+    console.log({ showStep });
+
     let errorMd = "";
     if (error?.trim() !== "") {
       errorMd = `
@@ -323,7 +325,9 @@ ${stepTable}
 ${showStep?.stdout}
 additional stdout:
 \`\`\`
-${planStep?.stdout ?? "No plan available. Check stderr or workflow logs."}
+${
+  planStep?.stdout.trim() || "No plan available. Check stderr or workflow logs."
+}
 \`\`\`
 
 ${errorMd}

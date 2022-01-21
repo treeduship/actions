@@ -31,7 +31,7 @@ ${u}.`),n.push(u);continue}let c;try{c=JSON.parse(u)}catch(l){throw new Error(`F
 `)}}async function oc(){try{let r=(0,G.getInput)("json")==="true",e=(0,G.getInput)("token",{required:!0}),t=(0,gn.getOctokit)(e),s=JSON.parse((0,G.getInput)("steps",{required:!0})),o=new Map([["fmt",s[(0,G.getInput)("fmt")||"fmt"]],["init",s[(0,G.getInput)("init")||"init"]],["validate",s[(0,G.getInput)("validate")||"validate"]],["plan",s[(0,G.getInput)("plan")||"plan"]],["show",s[(0,G.getInput)("show")||"show"]]]),n=(0,G.getInput)("context"),i=(0,G.getInput)("working-directory")??"./",a=new Intl.DateTimeFormat("en-US",{dateStyle:"medium",timeStyle:"long",timeZone:"America/Chicago"}).format(new Date),u=`
 | cmd | result |
 |----|----|`,c="",l=new Map;for(let[L,ee]of o){let re=L==="show"?"tfplan.json":`${L}.log`,{table:he,stdout:mr,stderr:bt}=r?await sc(L,ee,(0,mn.resolve)(i,re)):await tc(L,ee);u+=he,l.set(L,{stdout:mr,stderr:bt}),c+=bt+`
-`}let d=l.get("plan"),p=l.get("show"),m="";(c==null?void 0:c.trim())!==""&&(m=`
+`}let d=l.get("plan"),p=l.get("show");console.log({showStep:p});let m="";(c==null?void 0:c.trim())!==""&&(m=`
 stderr:
 \`\`\`
 ${(d==null?void 0:d.stderr.trim())||"N/A"}
@@ -43,7 +43,7 @@ ${u}
 ${p==null?void 0:p.stdout}
 additional stdout:
 \`\`\`
-${(d==null?void 0:d.stdout)??"No plan available. Check stderr or workflow logs."}
+${(d==null?void 0:d.stdout.trim())||"No plan available. Check stderr or workflow logs."}
 \`\`\`
 
 ${m}
