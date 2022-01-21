@@ -140,10 +140,21 @@ async function parseLog(
           "Failed to read log file. Refer to step output in Workflow logs.",
       };
     }
+
+    let resultIcon: string;
+    switch (result?.outcome) {
+      case "failure":
+        resultIcon = "❌";
+        break;
+      case "success":
+        resultIcon = "✔️";
+        break;
+      default:
+        resultIcon = "-";
+        break;
+    }
     return {
-      table: `\n| \`${stepName}\` | ${
-        result?.outcome === "failure" ? "❌" : "-"
-      } |`,
+      table: `\n| \`${stepName}\` | ${resultIcon} |`,
       stdout: "",
       stderr: "",
     };
@@ -177,9 +188,7 @@ async function parseLog(
             throw new Error(`Failed to parse log lines for ${logName}. ${e}`);
           }
 
-          if (log["@level"] !== "error") {
-            stdout.push(log["@message"]);
-          } else {
+          if (log["@level"] == "error") {
             stderr.push(log["@message"]);
           }
 
@@ -312,7 +321,7 @@ ${stepTable}
 
 <details><summary><b>Plan Output</b></summary>
 ${showStep?.stdout}
-stdout:
+additional stdout:
 \`\`\`
 ${planStep?.stdout ?? "No plan available. Check stderr or workflow logs."}
 \`\`\`
