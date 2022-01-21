@@ -1,3 +1,15 @@
+# v1.2.7 (Fri Jan 21 2022)
+
+#### 🐛 Bug Fix
+
+- fix: update helpers shared lib (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.2.6 (Fri Jan 21 2022)
 
 #### 🐛 Bug Fix
