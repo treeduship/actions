@@ -1,11 +1,13 @@
+import { TooLongError } from "./../helpers/comment";
 import "source-map-support/register";
-import { getInput, setFailed, warning } from "@actions/core";
+import { getInput, setFailed, warning, error } from "@actions/core";
 import { getOctokit } from "@actions/github";
 import { createOrUpdatePRComment } from "@uship/actions-helpers/comment";
 import { default as stripAnsi } from "strip-ansi";
+import split2 from "split2";
+import diff from "json-diff";
 import { createReadStream, existsSync } from "node:fs";
 import { resolve } from "node:path";
-import split2 from "split2";
 import { readFile } from "node:fs/promises";
 
 interface TfStep {
@@ -116,7 +118,15 @@ interface TerraformPlan {
     address: string;
     previous_address: string;
     module_address: string;
-    change: any;
+    change: {
+      actions: string[];
+      before: object;
+      after: object;
+      after_unknown: object;
+      before_sensitive: object;
+      after_sensitive: object;
+      replace_paths: string[];
+    };
     action_reason: string;
   }[];
 }
@@ -234,13 +244,39 @@ async function parseLog(
         stdout.push("");
         stdout.push("changes:\n");
 
-        for (const change of plan.resource_changes) {
+        for (const resource of plan.resource_changes) {
+          if (resource.change.actions.includes("no-op")) {
+            continue;
+          }
+
+          const { previous_address, address, change } = resource;
+          const {
+            actions,
+            before,
+            before_sensitive,
+            after,
+            after_sensitive,
+            after_unknown,
+          } = change;
+
           stdout.push(
             `${
-              change.previous_address ? change.previous_address + " => " : ""
-            }${change.address} (${change.action_reason ?? "changed"}):`
+              previous_address ? previous_address + " => " : ""
+            }${address} (${actions.join(" => ")}):`
           );
-          stdout.push(JSON.stringify(change.change, null, 2));
+          stdout.push(diff.diffString(before, after, { color: false }));
+          if (before_sensitive && after_sensitive) {
+            stdout.push("\nsensitive changes:");
+            stdout.push(
+              diff.diffString(before_sensitive, after_sensitive, {
+                color: false,
+              })
+            );
+          }
+          if (after_unknown) {
+            stdout.push("\nunknown values");
+            stdout.push(JSON.stringify(after_unknown, null, 2));
+          }
           stdout.push("\n");
         }
       }
@@ -291,7 +327,7 @@ async function run() {
 | cmd | result |
 |----|----|`;
 
-    let error = "";
+    let errorMessage = "";
     const stepResults = new Map<string, { stdout: string; stderr: string }>();
     for (const [name, result] of tfSteps) {
       const logName = name === "show" ? "tfplan.json" : `${name}.log`;
@@ -300,20 +336,18 @@ async function run() {
         : await parseStdout(name, result);
       stepTable += table;
       stepResults.set(name, { stdout, stderr });
-      error += stderr + "\n";
+      errorMessage += stderr + "\n";
     }
 
     const planStep = stepResults.get("plan");
     const showStep = stepResults.get("show");
 
-    console.log({ showStep });
-
     let errorMd = "";
-    if (error?.trim() !== "") {
+    if (errorMessage?.trim() !== "") {
       errorMd = `
 stderr:
 \`\`\`
-${planStep?.stderr.trim() || "N/A"}
+${errorMessage?.trim() || "N/A"}
 \`\`\``;
     }
 
@@ -344,20 +378,48 @@ ${errorMd}
     const prId = Number.parseInt(getInput("pr-id", { required: true }), 10);
 
     const context = `terraform-output${contextId}`;
-    await createOrUpdatePRComment({
-      owner,
-      repo,
-      prId,
-      context,
-      body,
-      octokit,
-    });
+    try {
+      await createOrUpdatePRComment({
+        owner,
+        repo,
+        prId,
+        context,
+        body,
+        octokit,
+      });
+    } catch (e) {
+      if (e instanceof TooLongError) {
+        const fallbackBody = `
+## Terraform Output${contextId ? ` for ${contextId}` : ""}
+${stepTable}
+
+Logs too long to store in comment, review Workflow logs for more details.
+
+*Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${
+          process.env.GITHUB_EVENT_NAME
+        }\`, Workflow: \`${process.env.GITHUB_WORKFLOW}\`*;
+
+--------------
+<sup>Last Updated: ${now}</sup>
+`;
+        await createOrUpdatePRComment({
+          owner,
+          repo,
+          prId,
+          context,
+          body: fallbackBody,
+          octokit,
+        });
+      }
+    }
 
     if (getInput("fail-on-error").toLowerCase() === "true") {
       tfSteps.forEach((result, name) => {
         if (result && result.outcome === "failure") {
           setFailed(
-            `Terraform step "${name}" failed. Err: ${error ?? "Unavailable."}`
+            `Terraform step "${name}" failed. Err: ${
+              errorMessage ?? "Unavailable."
+            }`
           );
         }
       });
