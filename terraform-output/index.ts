@@ -6,6 +6,7 @@ import { default as stripAnsi } from "strip-ansi";
 import { createReadStream, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import split2 from "split2";
+import { readFile } from "node:fs/promises";
 
 interface TfStep {
   outcome: "success" | "failure";
@@ -242,7 +243,8 @@ async function run() {
 | cmd | result |
 |----|----|`;
 
-    let planOut = "";
+    let planStdout = "";
+    let planContents = "";
     let error = "";
     const stepResults = new Map<string, { stdout: string; stderr: string }>();
     for (const [name, result] of tfSteps) {
@@ -253,8 +255,13 @@ async function run() {
       stepResults.set(name, { stdout, stderr });
       error += stderr + "\n";
       if (name === "plan") {
-        planOut = stdout;
+        planStdout = stdout;
       }
+    }
+
+    const tfplan = resolve(cwd, "tfplan.log");
+    if (existsSync(tfplan)) {
+      planContents = (await readFile(tfplan)).toString();
     }
 
     const planStep = stepResults.get("plan");
@@ -275,8 +282,14 @@ ${stepTable}
 <details><summary><b>Plan Output</b></summary>
 
 \`\`\`
-${planOut ?? "No plan available. Check stderr or workflow logs."}
+${planStdout ?? "No plan available. Check stderr or workflow logs."}
 \`\`\`
+
+plan contents:
+\`\`\`
+${planContents?.trim() || "N/A"}
+\`\`\`
+
 ${errorMd}
 </details>
 
