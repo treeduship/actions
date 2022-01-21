@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import { getInput, setFailed } from "@actions/core";
 import { getOctokit } from "@actions/github";
 import { createOrUpdatePRComment } from "@uship/actions-helpers/comment";

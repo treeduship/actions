@@ -1,4 +1,3 @@
-import "source-map-support/register";
 import { getInput, setSecret, exportVariable, setOutput } from "@actions/core";
 import { SSM } from "@aws-sdk/client-ssm";
 import { SecretsManager } from "@aws-sdk/client-secrets-manager";
