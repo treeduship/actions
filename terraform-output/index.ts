@@ -242,7 +242,7 @@ async function parseLog(
           (await readFile(logName)).toString()
         ) as TerraformPlan;
         stdout.push("");
-        stdout.push("changes:\n");
+        stdout.push("changes:");
 
         for (const resource of plan.resource_changes) {
           if (resource.change.actions.includes("no-op")) {
@@ -259,23 +259,34 @@ async function parseLog(
             after_unknown,
           } = change;
 
+          const hasKeys = (diffPart: any) =>
+            !!diffPart && Object.keys(diffPart).length > 0;
+
           stdout.push(
-            `${
+            `\`${
               previous_address ? previous_address + " => " : ""
-            }${address} (${actions.join(" => ")}):`
+            }${address} (${actions.join(" => ")}\``
           );
-          stdout.push(diff.diffString(before, after, { color: false }));
-          if (before_sensitive && after_sensitive) {
-            stdout.push("\nsensitive changes:");
+          if (hasKeys(before) && hasKeys(after)) {
+            stdout.push("```diff");
+            stdout.push(diff.diffString(before, after, { color: false }));
+            stdout.push("```");
+          }
+          if (hasKeys(before_sensitive) && hasKeys(after_sensitive)) {
+            stdout.push("sensitive changes:");
+            stdout.push("```diff");
             stdout.push(
               diff.diffString(before_sensitive, after_sensitive, {
                 color: false,
               })
             );
+            stdout.push("```");
           }
-          if (after_unknown) {
-            stdout.push("\nunknown values");
+          if (after_unknown && Object.keys(after_unknown).length > 0) {
+            stdout.push("unknown values:");
+            stdout.push("```json");
             stdout.push(JSON.stringify(after_unknown, null, 2));
+            stdout.push("```");
           }
           stdout.push("\n");
         }
