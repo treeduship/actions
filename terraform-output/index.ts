@@ -118,11 +118,17 @@ async function parseLog(
       !["init", "fmt", "validate"].includes(stepName)
     ) {
       warning(`Failed to read log file ${logName} for step ${stepName}.`);
+      return {
+        table: `\n| \`${stepName}\` | ❌ |`,
+        stdout: "",
+        stderr:
+          "Failed to read log file. Refer to step output in Workflow logs.",
+      };
     }
     return {
-      table: `\n| \`${stepName}\` |   "✖"   |`,
+      table: `\n| \`${stepName}\` | ❌ |`,
       stdout: "",
-      stderr: "Failed to read log file. Refer to step output in Workflow logs.",
+      stderr: "",
     };
   }
 
@@ -191,7 +197,7 @@ async function parseLog(
 
   if (result?.output === "failure") {
     return {
-      table: `\n| \`${stepName}\` |   "✖"   |`,
+      table: `\n| \`${stepName}\` | ❌ |`,
       stdout: stdout.join("\n"),
       stderr: stderr.join("\n"),
     };
@@ -213,7 +219,7 @@ async function run() {
     const steps = JSON.parse(getInput("steps", { required: true }));
 
     const tfSteps = new Map<string, TfStep | undefined>([
-      ["fmt -check", steps[getInput("fmt") || "fmt"]],
+      ["fmt", steps[getInput("fmt") || "fmt"]],
       ["init", steps[getInput("init") || "init"]],
       ["validate", steps[getInput("validate") || "validate"]],
       ["plan", steps[getInput("plan") || "plan"]],
@@ -292,7 +298,7 @@ ${errorMd}
       tfSteps.forEach((result, name) => {
         if (result && result.outcome === "failure") {
           setFailed(
-            `Terraform step "${name}" failed. Err: ${error ?? "Unavailable."})}`
+            `Terraform step "${name}" failed. Err: ${error ?? "Unavailable."}`
           );
         }
       });

@@ -16,16 +16,17 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``)}g.g
 | \`${e}\` | ${E}${c?"*":""} |`}else t+=`
 | \`${e}\` | \u{1F4AC}${c?"*":""} |`}else t+=`
 | \`${e}\` | \u2796${c?"*":""} |`}else t+=`
-| \`${e}\` |  ${(r==null?void 0:r.outcome)=="success"?"\u2714":"\u2716"}   |`;return e!=="plan"&&(r==null?void 0:r.outcome)=="success"&&(s+=Ke(((n=r.outputs)==null?void 0:n.stdout)??"")),(r==null?void 0:r.outcome)==="failure"&&(o+=Ke(((i=r.outputs)==null?void 0:i.stderr)??"")),{table:t,stdout:s,stderr:o}}async function ec(e,r,t){if(!(0,gr.existsSync)(t))return(r==null?void 0:r.outcome)!=="failure"&&!["init","fmt","validate"].includes(e)&&(0,A.warning)(`Failed to read log file ${t} for step ${e}.`),{table:`
-| \`${e}\` |   "\u2716"   |`,stdout:"",stderr:"Failed to read log file. Refer to step output in Workflow logs."};let s="",o=[],n=[],i=!1,a=(0,gr.createReadStream)(t).pipe((0,fn.default)());for await(let u of a){if((u??"").trim()==="")continue;if(!u.startsWith("{")){(0,A.warning)(`Assuming non-JSON line from log file ${t} is error.
+| \`${e}\` |  ${(r==null?void 0:r.outcome)=="success"?"\u2714":"\u2716"}   |`;return e!=="plan"&&(r==null?void 0:r.outcome)=="success"&&(s+=Ke(((n=r.outputs)==null?void 0:n.stdout)??"")),(r==null?void 0:r.outcome)==="failure"&&(o+=Ke(((i=r.outputs)==null?void 0:i.stderr)??"")),{table:t,stdout:s,stderr:o}}async function ec(e,r,t){if(!(0,gr.existsSync)(t))return(r==null?void 0:r.outcome)!=="failure"&&!["init","fmt","validate"].includes(e)?((0,A.warning)(`Failed to read log file ${t} for step ${e}.`),{table:`
+| \`${e}\` | \u274C |`,stdout:"",stderr:"Failed to read log file. Refer to step output in Workflow logs."}):{table:`
+| \`${e}\` | \u274C |`,stdout:"",stderr:""};let s="",o=[],n=[],i=!1,a=(0,gr.createReadStream)(t).pipe((0,fn.default)());for await(let u of a){if((u??"").trim()==="")continue;if(!u.startsWith("{")){(0,A.warning)(`Assuming non-JSON line from log file ${t} is error.
 ${u}.`),n.push(u);continue}let c;try{c=JSON.parse(u)}catch(l){throw new Error(`Failed to parse log lines for ${t}. ${l}`)}switch(c["@level"]!=="error"?o.push(c["@message"]):n.push(c["@message"]),(c["@level"]==="warning"||c.type==="resource_drift")&&(i=!0),c.type){case"change_summary":{let{add:l,change:d,remove:p}=c.changes;if(l+d+p===0){s+=`
 | \`${e}\` | \u2796${i?"*":""} |`;continue}let m=[["+",l],["~",d],["-",p]].filter(([E,_])=>_>0).map(([E,_])=>`${E}${_}`).join(", ");s+=`
 | \`${e}\` | ${m}${i?"*":""} |`}break}}return(r==null?void 0:r.output)==="failure"?{table:`
-| \`${e}\` |   "\u2716"   |`,stdout:o.join(`
+| \`${e}\` | \u274C |`,stdout:o.join(`
 `),stderr:n.join(`
 `)}:{table:s,stdout:o.join(`
 `),stderr:n.join(`
-`)}}async function rc(){try{let e=(0,A.getInput)("json")==="true",r=(0,A.getInput)("token",{required:!0}),t=(0,dn.getOctokit)(r),s=JSON.parse((0,A.getInput)("steps",{required:!0})),o=new Map([["fmt -check",s[(0,A.getInput)("fmt")||"fmt"]],["init",s[(0,A.getInput)("init")||"init"]],["validate",s[(0,A.getInput)("validate")||"validate"]],["plan",s[(0,A.getInput)("plan")||"plan"]]]),n=(0,A.getInput)("context"),i=new Intl.DateTimeFormat("en-US",{dateStyle:"medium",timeStyle:"long",timeZone:"America/Chicago"}).format(new Date),a=`
+`)}}async function rc(){try{let e=(0,A.getInput)("json")==="true",r=(0,A.getInput)("token",{required:!0}),t=(0,dn.getOctokit)(r),s=JSON.parse((0,A.getInput)("steps",{required:!0})),o=new Map([["fmt",s[(0,A.getInput)("fmt")||"fmt"]],["init",s[(0,A.getInput)("init")||"init"]],["validate",s[(0,A.getInput)("validate")||"validate"]],["plan",s[(0,A.getInput)("plan")||"plan"]]]),n=(0,A.getInput)("context"),i=new Intl.DateTimeFormat("en-US",{dateStyle:"medium",timeStyle:"long",timeZone:"America/Chicago"}).format(new Date),a=`
 | cmd | result |
 |----|----|`,u="",c="",l=new Map;for(let[b,V]of o){let{table:Ce,stdout:K,stderr:ue}=e?await ec(b,V,`${b}.log`):await Xu(b,V);a+=Ce,l.set(b,{stdout:K,stderr:ue}),c+=ue+`
 `,b==="plan"&&(u=K)}let d=l.get("plan"),p="";(c==null?void 0:c.trim())!==""&&(p=`
@@ -47,7 +48,7 @@ ${p}
 *Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${process.env.GITHUB_EVENT_NAME}\`, Workflow: \`${process.env.GITHUB_WORKFLOW}\`*;
 
 --------------
-<sup>Last Updated: ${i}</sup>`,[E,_]=process.env.GITHUB_REPOSITORY.split("/"),v=Number.parseInt((0,A.getInput)("pr-id",{required:!0}),10),w=`terraform-output${n}`;await an({owner:E,repo:_,prId:v,context:w,body:m,octokit:t}),(0,A.getInput)("fail-on-error").toLowerCase()==="true"&&o.forEach((b,V)=>{b&&b.outcome==="failure"&&(0,A.setFailed)(`Terraform step "${V}" failed. Err: ${c??"Unavailable."})}`)})}catch(e){(0,A.setFailed)(e)}}rc();
+<sup>Last Updated: ${i}</sup>`,[E,_]=process.env.GITHUB_REPOSITORY.split("/"),v=Number.parseInt((0,A.getInput)("pr-id",{required:!0}),10),w=`terraform-output${n}`;await an({owner:E,repo:_,prId:v,context:w,body:m,octokit:t}),(0,A.getInput)("fail-on-error").toLowerCase()==="true"&&o.forEach((b,V)=>{b&&b.outcome==="failure"&&(0,A.setFailed)(`Terraform step "${V}" failed. Err: ${c??"Unavailable."}`)})}catch(e){(0,A.setFailed)(e)}}rc();
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *
