@@ -1,3 +1,15 @@
+# v1.2.4 (Fri Jan 21 2022)
+
+#### ⚠️ Pushed to `main`
+
+- remove source map register since it's not esm compatible (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.2.3 (Mon Jan 17 2022)
 
 #### ⚠️ Pushed to `main`
