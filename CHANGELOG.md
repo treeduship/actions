@@ -1,3 +1,15 @@
+# v1.2.6 (Fri Jan 21 2022)
+
+#### 🐛 Bug Fix
+
+- fix: refer to cjs versions (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.2.5 (Fri Jan 21 2022)
 
 #### ⚠️ Pushed to `main`
