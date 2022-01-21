@@ -109,6 +109,18 @@ type TerraformUiJson =
   | TerraformChangeSummaryJson
   | TerraformDriftJson;
 
+interface TerraformPlan {
+  format_version: string;
+  terraform_version: string;
+  resource_changes: {
+    address: string;
+    previous_address: string;
+    module_address: string;
+    change: any;
+    action_reason: string;
+  }[];
+}
+
 async function parseLog(
   stepName: string,
   result: any,
@@ -118,7 +130,7 @@ async function parseLog(
     if (
       result?.outcome &&
       result?.outcome !== "failure" &&
-      !["init", "fmt", "validate"].includes(stepName)
+      !["init", "fmt", "validate", "show"].includes(stepName)
     ) {
       warning(`Failed to read log file ${logName} for step ${stepName}.`);
       return {
@@ -137,67 +149,93 @@ async function parseLog(
     };
   }
 
-  // TODO: Validate has it's whole own JSON output format, support that.
   let table = "";
   let stdout: string[] = [];
   let stderr: string[] = [];
-  let hasWarnings = false;
-  const logStream = createReadStream(logName).pipe(split2());
-  for await (const logLine of logStream) {
-    if (((logLine as string) ?? "").trim() === "") {
-      continue;
-    }
-
-    if (!(logLine as string).startsWith("{")) {
-      warning(
-        `Assuming non-JSON line from log file ${logName} is error.\n${logLine}.`
-      );
-      stderr.push(logLine);
-      continue;
-    }
-
-    let log: TerraformUiJson;
-    try {
-      log = JSON.parse(logLine);
-    } catch (e) {
-      throw new Error(`Failed to parse log lines for ${logName}. ${e}`);
-    }
-
-    if (log["@level"] !== "error") {
-      stdout.push(log["@message"]);
-    } else {
-      stderr.push(log["@message"]);
-    }
-
-    if (log["@level"] === "warning" || log.type === "resource_drift") {
-      hasWarnings = true;
-    }
-
-    switch (log.type) {
-      case "change_summary":
-        {
-          const { add, change, remove } = log.changes;
-          if (add + change + remove === 0) {
-            table += `\n| \`${stepName}\` | ➖${hasWarnings ? "*" : ""} |`;
+  switch (stepName) {
+    case "plan":
+      {
+        let hasWarnings = false;
+        const logStream = createReadStream(logName).pipe(split2());
+        for await (const logLine of logStream) {
+          if (((logLine as string) ?? "").trim() === "") {
             continue;
           }
 
-          const countText = (
-            [
-              ["+", add],
-              ["~", change],
-              ["-", remove],
-            ] as const
-          )
-            .filter(([_, count]) => count > 0)
-            .map(([icon, count]) => `${icon}${count}`)
-            .join(", ");
-          table += `\n| \`${stepName}\` | ${countText}${
-            hasWarnings ? "*" : ""
-          } |`;
+          if (!(logLine as string).startsWith("{")) {
+            warning(
+              `Assuming non-JSON line from log file ${logName} is error.\n${logLine}.`
+            );
+            stderr.push(logLine);
+            continue;
+          }
+
+          let log: TerraformUiJson;
+          try {
+            log = JSON.parse(logLine);
+          } catch (e) {
+            throw new Error(`Failed to parse log lines for ${logName}. ${e}`);
+          }
+
+          if (log["@level"] !== "error") {
+            stdout.push(log["@message"]);
+          } else {
+            stderr.push(log["@message"]);
+          }
+
+          if (log["@level"] === "warning" || log.type === "resource_drift") {
+            hasWarnings = true;
+          }
+
+          switch (log.type) {
+            case "change_summary":
+              {
+                const { add, change, remove } = log.changes;
+                if (add + change + remove === 0) {
+                  table += `\n| \`${stepName}\` | ➖${
+                    hasWarnings ? "*" : ""
+                  } |`;
+                  continue;
+                }
+
+                const countText = (
+                  [
+                    ["+", add],
+                    ["~", change],
+                    ["-", remove],
+                  ] as const
+                )
+                  .filter(([_, count]) => count > 0)
+                  .map(([icon, count]) => `${icon}${count}`)
+                  .join(", ");
+                table += `\n| \`${stepName}\` | ${countText}${
+                  hasWarnings ? "*" : ""
+                } |`;
+              }
+              break;
+          }
         }
-        break;
-    }
+      }
+      break;
+    case "show":
+      {
+        const plan = JSON.parse(
+          (await readFile(logName)).toString()
+        ) as TerraformPlan;
+        stdout.push("");
+        stdout.push("changes:\n");
+
+        for (const change of plan.resource_changes) {
+          stdout.push(
+            `${
+              change.previous_address ? change.previous_address + " => " : ""
+            }${change.address} (${change.action_reason ?? "changed"}):`
+          );
+          stdout.push(JSON.stringify(change.change, null, 2));
+          stdout.push("\n");
+        }
+      }
+      break;
   }
 
   if (result?.output === "failure") {
@@ -228,6 +266,7 @@ async function run() {
       ["init", steps[getInput("init") || "init"]],
       ["validate", steps[getInput("validate") || "validate"]],
       ["plan", steps[getInput("plan") || "plan"]],
+      ["show", steps[getInput("show") || "show"]],
     ]);
 
     const contextId = getInput("context");
@@ -243,22 +282,20 @@ async function run() {
 | cmd | result |
 |----|----|`;
 
-    let planStdout = "";
     let error = "";
     const stepResults = new Map<string, { stdout: string; stderr: string }>();
     for (const [name, result] of tfSteps) {
+      const logName = name === "show" ? "tfplan.json" : `${name}.log`;
       const { table, stdout, stderr } = readJson
-        ? await parseLog(name, result, resolve(cwd, `${name}.log`))
+        ? await parseLog(name, result, resolve(cwd, logName))
         : await parseStdout(name, result);
       stepTable += table;
       stepResults.set(name, { stdout, stderr });
       error += stderr + "\n";
-      if (name === "plan") {
-        planStdout = stdout;
-      }
     }
 
     const planStep = stepResults.get("plan");
+    const showStep = stepResults.get("show");
 
     let errorMd = "";
     if (error?.trim() !== "") {
@@ -274,9 +311,10 @@ ${planStep?.stderr.trim() || "N/A"}
 ${stepTable}
 
 <details><summary><b>Plan Output</b></summary>
-
+${showStep?.stdout}
+stdout:
 \`\`\`
-${planStdout ?? "No plan available. Check stderr or workflow logs."}
+${planStep?.stdout ?? "No plan available. Check stderr or workflow logs."}
 \`\`\`
 
 ${errorMd}
