@@ -200,6 +200,8 @@ async function parseLog(
 
           if (log["@level"] == "error") {
             stderr.push(log["@message"]);
+          } else {
+            stdout.push(`${log["@level"]}: ${log["@message"]}`);
           }
 
           if (log["@level"] === "warning" || log.type === "resource_drift") {
@@ -259,8 +261,6 @@ async function parseLog(
             after_unknown,
           } = change;
 
-          console.log({ resource, change });
-
           const hasKeys = (diffPart: any) =>
             !!diffPart && Object.keys(diffPart).length > 0;
 
@@ -270,7 +270,10 @@ async function parseLog(
             }${address} (${actions.join(" => ")})\``
           );
           if (hasKeys(before) && hasKeys(after)) {
-            const rendered = diff.diffString(before, after, { color: false });
+            const rendered = diff.diffString(before, after, {
+              color: false,
+              full: true,
+            });
             if (rendered.trim() !== "") {
               stdout.push("```diff");
               stdout.push(rendered);
@@ -281,7 +284,7 @@ async function parseLog(
             const rendered = diff.diffString(
               before_sensitive,
               after_sensitive,
-              { color: false }
+              { color: false, full: true }
             );
             stdout.push("sensitive changes:");
             stdout.push("```diff");
