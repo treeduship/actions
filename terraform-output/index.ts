@@ -240,65 +240,14 @@ async function parseLog(
       break;
     case "show":
       {
-        const plan = JSON.parse(
-          (await readFile(logName)).toString()
-        ) as TerraformPlan;
-        stdout.push("");
-        stdout.push("## changes:");
+        const logContents = (await readFile(logName)).toString();
+        stdout.push(`
+## plan
 
-        for (const resource of plan.resource_changes) {
-          if (resource.change.actions.includes("no-op")) {
-            continue;
-          }
-
-          const { previous_address, address, change } = resource;
-          const {
-            actions,
-            before,
-            before_sensitive,
-            after,
-            after_sensitive,
-            after_unknown,
-          } = change;
-
-          const hasKeys = (diffPart: any) =>
-            !!diffPart && Object.keys(diffPart).length > 0;
-
-          stdout.push(
-            ` * \`${
-              previous_address ? previous_address + " => " : ""
-            }${address} (${actions.join(" => ")})\``
-          );
-          if (hasKeys(before) && hasKeys(after)) {
-            const rendered = diff.diffString(before, after, {
-              color: false,
-              full: true,
-            });
-            if (rendered.trim() !== "") {
-              stdout.push("```diff");
-              stdout.push(rendered);
-              stdout.push("```");
-            }
-          }
-          if (hasKeys(before_sensitive) && hasKeys(after_sensitive)) {
-            const rendered = diff.diffString(
-              before_sensitive,
-              after_sensitive,
-              { color: false, full: true }
-            );
-            stdout.push("sensitive changes:");
-            stdout.push("```diff");
-            stdout.push(rendered);
-            stdout.push("```");
-          }
-          if (after_unknown && Object.keys(after_unknown).length > 0) {
-            stdout.push("unknown values:");
-            stdout.push("```json");
-            stdout.push(JSON.stringify(after_unknown, null, 2));
-            stdout.push("```");
-          }
-          stdout.push("\n");
-        }
+\`\`\`
+${logContents}
+\`\`\`
+`);
       }
       break;
   }
@@ -350,9 +299,8 @@ async function run() {
     let errorMessage = "";
     const stepResults = new Map<string, { stdout: string; stderr: string }>();
     for (const [name, result] of tfSteps) {
-      const logName = name === "show" ? "tfplan.json" : `${name}.log`;
       const { table, stdout, stderr } = readJson
-        ? await parseLog(name, result, resolve(cwd, logName))
+        ? await parseLog(name, result, resolve(cwd, `${name}.log`))
         : await parseStdout(name, result);
       stepTable += table;
       stepResults.set(name, { stdout, stderr });
@@ -365,7 +313,8 @@ async function run() {
     let errorMd = "";
     if (errorMessage?.trim() !== "") {
       errorMd = `
-stderr:
+## stderr:
+
 \`\`\`
 ${errorMessage?.trim() || "N/A"}
 \`\`\``;
@@ -377,10 +326,12 @@ ${stepTable}
 
 <details><summary><b>Plan Output</b></summary>
 ${showStep?.stdout}
-additional stdout:
+## stdout:
+
 \`\`\`
 ${
-  planStep?.stdout.trim() || "No plan available. Check stderr or workflow logs."
+  planStep?.stdout.trim() ||
+  "No plan logs available. Check stderr or workflow logs."
 }
 \`\`\`
 
