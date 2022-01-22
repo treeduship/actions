@@ -68,7 +68,7 @@ ${c}
 
 Logs too long to store in comment, review Workflow logs for more details.
 
-*Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${process.env.GITHUB_EVENT_NAME}\`, [Workflow: \`${process.env.GITHUB_WORKFLOW}\`](https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${process.env.GITHUB_RUN_ID})*;
+*Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${process.env.GITHUB_EVENT_NAME}\`, [Workflow: \`${process.env.GITHUB_WORKFLOW}\`](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})*;
 
 --------------
 <sup>Last Updated: ${a}</sup>`;await Kn({owner:g,repo:_,prId:v,context:T,body:A,octokit:t})}}(0,te.getInput)("fail-on-error").toLowerCase()==="true"&&s.forEach((S,A)=>{S&&S.outcome==="failure"&&(0,te.setFailed)(`Terraform step "${A}" failed. Err: ${u??"Unavailable."}`)})}catch(e){(0,te.setFailed)(e)}}LT();

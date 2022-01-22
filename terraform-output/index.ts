@@ -421,7 +421,7 @@ Logs too long to store in comment, review Workflow logs for more details.
           process.env.GITHUB_EVENT_NAME
         }\`, [Workflow: \`${
           process.env.GITHUB_WORKFLOW
-        }\`](https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${
+        }\`](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${
           process.env.GITHUB_RUN_ID
         })*;
 
