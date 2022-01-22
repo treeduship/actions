@@ -111,26 +111,6 @@ type TerraformUiJson =
   | TerraformChangeSummaryJson
   | TerraformDriftJson;
 
-interface TerraformPlan {
-  format_version: string;
-  terraform_version: string;
-  resource_changes: {
-    address: string;
-    previous_address: string;
-    module_address: string;
-    change: {
-      actions: string[];
-      before: object;
-      after: object;
-      after_unknown: object;
-      before_sensitive: object;
-      after_sensitive: object;
-      replace_paths: string[];
-    };
-    action_reason: string;
-  }[];
-}
-
 async function parseLog(
   stepName: string,
   result: any,
@@ -245,7 +225,7 @@ async function parseLog(
 ## plan
 
 \`\`\`
-${logContents}
+${stripAnsi(logContents)}
 \`\`\`
 `);
       }
