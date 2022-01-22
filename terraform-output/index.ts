@@ -386,7 +386,9 @@ ${errorMd}
 
 *Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${
       process.env.GITHUB_EVENT_NAME
-    }\`, Workflow: \`${process.env.GITHUB_WORKFLOW}\`*;
+    }\`, [Workflow: \`${process.env.GITHUB_WORKFLOW}\`](https://github.com/${
+      process.env.GITHUB_REPOSITORY
+    }/runs/${process.env.GITHUB_RUN_ID})*;
 
 --------------
 <sup>Last Updated: ${now}</sup>`;
@@ -414,11 +416,14 @@ Logs too long to store in comment, review Workflow logs for more details.
 
 *Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${
           process.env.GITHUB_EVENT_NAME
-        }\`, Workflow: \`${process.env.GITHUB_WORKFLOW}\`*;
+        }\`, [Workflow: \`${
+          process.env.GITHUB_WORKFLOW
+        }\`](https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${
+          process.env.GITHUB_RUN_ID
+        })*;
 
 --------------
-<sup>Last Updated: ${now}</sup>
-`;
+<sup>Last Updated: ${now}</sup>`;
         await createOrUpdatePRComment({
           owner,
           repo,

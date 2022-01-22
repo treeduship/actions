@@ -59,7 +59,7 @@ ${(b==null?void 0:b.stdout.trim())||"No plan available. Check stderr or workflow
 ${P}
 </details>
 
-*Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${process.env.GITHUB_EVENT_NAME}\`, Workflow: \`${process.env.GITHUB_WORKFLOW}\`*;
+*Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${process.env.GITHUB_EVENT_NAME}\`, [Workflow: \`${process.env.GITHUB_WORKFLOW}\`](https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${process.env.GITHUB_RUN_ID})*;
 
 --------------
 <sup>Last Updated: ${a}</sup>`,[g,_]=process.env.GITHUB_REPOSITORY.split("/"),v=Number.parseInt((0,te.getInput)("pr-id",{required:!0}),10),T=`terraform-output${o}`;try{await Kn({owner:g,repo:_,prId:v,context:T,body:q,octokit:t})}catch(S){if(S instanceof Ht){let A=`
@@ -68,11 +68,10 @@ ${u}
 
 Logs too long to store in comment, review Workflow logs for more details.
 
-*Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${process.env.GITHUB_EVENT_NAME}\`, Workflow: \`${process.env.GITHUB_WORKFLOW}\`*;
+*Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${process.env.GITHUB_EVENT_NAME}\`, [Workflow: \`${process.env.GITHUB_WORKFLOW}\`](https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${process.env.GITHUB_RUN_ID})*;
 
 --------------
-<sup>Last Updated: ${a}</sup>
-`;await Kn({owner:g,repo:_,prId:v,context:T,body:A,octokit:t})}}(0,te.getInput)("fail-on-error").toLowerCase()==="true"&&s.forEach((S,A)=>{S&&S.outcome==="failure"&&(0,te.setFailed)(`Terraform step "${A}" failed. Err: ${c??"Unavailable."}`)})}catch(e){(0,te.setFailed)(e)}}LT();
+<sup>Last Updated: ${a}</sup>`;await Kn({owner:g,repo:_,prId:v,context:T,body:A,octokit:t})}}(0,te.getInput)("fail-on-error").toLowerCase()==="true"&&s.forEach((S,A)=>{S&&S.outcome==="failure"&&(0,te.setFailed)(`Terraform step "${A}" failed. Err: ${c??"Unavailable."}`)})}catch(e){(0,te.setFailed)(e)}}LT();
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *
