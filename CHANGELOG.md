@@ -1,3 +1,15 @@
+# v1.3.0 (Sat Jan 22 2022)
+
+#### 🚀 Enhancement
+
+- feat: add json output support [#37](https://github.com/uShip/actions/pull/37) (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+
+---
+
 # v1.2.7 (Fri Jan 21 2022)
 
 #### 🐛 Bug Fix
