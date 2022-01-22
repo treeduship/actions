@@ -11,11 +11,15 @@
   "dependencies": {
     "@actions/core": "1.6.0",
     "@actions/github": "5.0.0",
+    "@types/json-diff": "^0.7.0",
     "esbuild": "^0.14.11",
+    "json-diff": "^0.7.1",
     "source-map-support": "^0.5.21",
+    "split2": "^4.1.0",
     "strip-ansi": "^7.0.1"
   },
   "devDependencies": {
-    "@types/node": "14.14.37"
+    "@types/node": "14.14.37",
+    "@types/split2": "^3.2.1"
   }
 }

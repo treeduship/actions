@@ -7,6 +7,10 @@ inputs:
   steps:
     description: The steps object from github workflow context
     required: true
+  json:
+    description: Whether or not to look for json log files instead of stdout and stderr
+    default: ""
+    required: false
   fmt:
     description: The step id of the format step
     default: fmt
@@ -37,6 +41,9 @@ inputs:
     required: false
   context:
     description: A unique context id if you have multiple terraform output actions running.
+    required: false
+  working-directory:
+    description: The directory where log files are outputted
     required: false
 runs:
   using: node16

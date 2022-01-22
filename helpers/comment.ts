@@ -1,4 +1,6 @@
+import { warning } from "@actions/core";
 import { getOctokit } from "@actions/github";
+import { RequestError } from "@octokit/request-error";
 
 interface PRCommentOptions {
   octokit: ReturnType<typeof getOctokit>;
@@ -7,6 +9,13 @@ interface PRCommentOptions {
   prId: number;
   context: string;
   body: string;
+}
+
+export class TooLongError extends Error {
+  constructor() {
+    super("Issue body is too long.");
+    this.name = "TooLongError";
+  }
 }
 
 export async function createOrUpdatePRComment({
@@ -30,19 +39,31 @@ export async function createOrUpdatePRComment({
 
   body = `<!-- ${commentId} -->\n\n` + body;
 
-  if (comment) {
-    octokit.rest.issues.updateComment({
-      owner,
-      repo,
-      comment_id: comment.id,
-      body,
-    });
-  } else {
-    octokit.rest.issues.createComment({
-      issue_number: prId,
-      owner,
-      repo,
-      body,
-    });
+  try {
+    if (comment) {
+      octokit.rest.issues.updateComment({
+        owner,
+        repo,
+        comment_id: comment.id,
+        body,
+      });
+    } else {
+      octokit.rest.issues.createComment({
+        issue_number: prId,
+        owner,
+        repo,
+        body,
+      });
+    }
+  } catch (e: unknown) {
+    if (e && typeof e == "object" && "message" in e) {
+      const message = (e as any).message as string;
+      if (
+        message.includes("Validation Failed") &&
+        message.includes("body is too long")
+      ) {
+        throw new TooLongError();
+      }
+    }
   }
 }

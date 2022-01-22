@@ -7,6 +7,11 @@ This action assists in neatly formatting and presenting terraform plan, as well 
         with:
           # JSON-ified step outcomes
           steps: ${{ toJSON(steps) }} # required
+
+          # Whether or not to parse the plan step as json.
+          # If enabled, assumes plan -json available at plan.log
+          # default: "false"
+          json: ""
   
           # Step ids of various steps.
           # Change if you're using non-default step ids
@@ -15,6 +20,7 @@ This action assists in neatly formatting and presenting terraform plan, as well 
           init: init           # default
           validate: validate   # default
           plan: plan           # default
+          show: show           # default
 
           # Whether or not to fail if any of the previous
           # steps failed.
@@ -33,6 +39,11 @@ This action assists in neatly formatting and presenting terraform plan, as well 
 ```yml
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
+        with:
+          # Necessary otherwise the output of some steps
+          # can cause the outputs of a given step to be too
+          # large to process correctly.
+          terraform_wrapper: false
 
       - name: Terraform fmt
         id: fmt
@@ -48,11 +59,16 @@ This action assists in neatly formatting and presenting terraform plan, as well 
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan
+        run: terraform plan -json -out=tfplan | tee plan.log
+
+      - name: Terraform Show
+        id: show
+        run: terraform show tfplan | tee show.log
 
       - uses: uShip/actions/terraform-output@v1
         if: ${{ always() }}
         with:
           steps: ${{ toJSON(steps) }}
+          json: true
 ```
 </details>
