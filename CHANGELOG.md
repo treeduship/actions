@@ -1,3 +1,15 @@
+# v1.4.0 (Thu Jan 27 2022)
+
+#### 🚀 Enhancement
+
+- feat: add sst-update action (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.3.0 (Sat Jan 22 2022)
 
 #### 🚀 Enhancement
