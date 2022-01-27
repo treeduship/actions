@@ -19,6 +19,6 @@ runs:
     - name: Commit Updates
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        commit_message: Update Serverless Stack to ${{ inputs.version }} and sync AWS CDK
+        commit_message: Update Serverless Stack to ${{ inputs.version }} and sync AWS CDK [actions skip]
         file_pattern: >
           "${{ inputs.working-directory }}package.json ${{ inputs.working-directory }}package-lock.json ${{ inputs.working-directory }}yarn.lock"
