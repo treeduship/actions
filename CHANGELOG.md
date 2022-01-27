@@ -1,3 +1,15 @@
+# v1.4.1 (Thu Jan 27 2022)
+
+#### ⚠️ Pushed to `main`
+
+- add actions skip to update commit (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.4.0 (Thu Jan 27 2022)
 
 #### 🚀 Enhancement
