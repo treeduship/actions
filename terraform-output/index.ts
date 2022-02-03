@@ -279,6 +279,11 @@ async function run() {
     let errorMessage = "";
     const stepResults = new Map<string, { stdout: string; stderr: string }>();
     for (const [name, result] of tfSteps) {
+      // Skip missing non-plan steps in output.
+      if (name !== "plan" && !result) {
+        continue;
+      }
+
       const { table, stdout, stderr } = readJson
         ? await parseLog(name, result, resolve(cwd, `${name}.log`))
         : await parseStdout(name, result);
