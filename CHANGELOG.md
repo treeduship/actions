@@ -1,3 +1,15 @@
+# v1.4.3 (Thu Feb 03 2022)
+
+#### 🐛 Bug Fix
+
+- fix: skip non-plan steps that have to step information (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.4.2 (Thu Feb 03 2022)
 
 #### 🐛 Bug Fix
