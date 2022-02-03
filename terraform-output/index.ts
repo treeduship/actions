@@ -64,7 +64,7 @@ async function parseStdout(
     }   |`;
   }
 
-  if (stepName !== "plan" && result?.outcome == "success") {
+  if (result?.outcome == "success") {
     stdout += stripAnsi(result.outputs?.stdout ?? "");
   }
 
