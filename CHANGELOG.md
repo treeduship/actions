@@ -1,3 +1,15 @@
+# v1.4.2 (Thu Feb 03 2022)
+
+#### 🐛 Bug Fix
+
+- fix: unconditionally append stdout ([@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 1
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+
+---
+
 # v1.4.1 (Thu Jan 27 2022)
 
 #### ⚠️ Pushed to `main`
