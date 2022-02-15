@@ -8,7 +8,6 @@ inputs:
   accounts:
     description: AWS Account Map
     required: true
-    default: ${{ secrets.AWS_ACCOUNTS }}
   region:
     description: AWS Region
     required: true
