@@ -20,7 +20,3 @@ runs:
       with:
         role-to-assume: arn:aws:iam::${{ fromJSON(inputs.accounts)[inputs.env]["id"] }}:role/github/all/${{ fromJSON(inputs.accounts)[inputs.env]["name"] }}-gha-deployer
         aws-region: ${{ inputs.region }}
-    - name: Set Secrets
-      uses: uShip/actions/aws-secrets@main
-      with:
-        environment: ${{ inputs.env }}
