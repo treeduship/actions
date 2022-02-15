@@ -1,3 +1,15 @@
+# v1.4.5 (Tue Feb 15 2022)
+
+#### 🐛 Bug Fix
+
+- fix: drop loading secrets for now (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.4.4 (Tue Feb 15 2022)
 
 #### 🐛 Bug Fix
