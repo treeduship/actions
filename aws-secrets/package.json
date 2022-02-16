@@ -21,6 +21,6 @@
   "devDependencies": {
     "@types/js-yaml": "^4.0.5",
     "@types/node": "17.0.9",
-    "ts-json-schema-generator": "^0.97.0"
+    "ts-json-schema-generator": "^0.98.0"
   }
 }
