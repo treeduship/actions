@@ -1,3 +1,15 @@
+# v1.5.0 (Thu Feb 17 2022)
+
+#### 🚀 Enhancement
+
+- feat: add steps-file input option (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.4.5 (Tue Feb 15 2022)
 
 #### 🐛 Bug Fix
