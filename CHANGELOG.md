@@ -1,3 +1,15 @@
+# v1.5.1 (Thu Feb 17 2022)
+
+#### 🐛 Bug Fix
+
+- fix: respect working directory when resolving steps file (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.5.0 (Thu Feb 17 2022)
 
 #### 🚀 Enhancement
