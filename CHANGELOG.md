@@ -1,3 +1,15 @@
+# v1.5.3 (Thu Feb 17 2022)
+
+#### 🐛 Bug Fix
+
+- fix: small wording tweak (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.5.2 (Thu Feb 17 2022)
 
 #### 🐛 Bug Fix
