@@ -62,7 +62,7 @@ ${T}
 ## Terraform Output${u?` for ${u}`:""}
 ${l}
 
-Logs too long to store in comment, review Workflow logs for more details.
+Some of the output of this terraform run was too long to store in comment. Review Workflow logs for more details or plan contents.
 
 *Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${process.env.GITHUB_EVENT_NAME}\`, [Workflow: \`${process.env.GITHUB_WORKFLOW}\`](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})*;
 

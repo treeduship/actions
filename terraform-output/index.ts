@@ -367,7 +367,7 @@ ${errorMd}
 ## Terraform Output${contextId ? ` for ${contextId}` : ""}
 ${stepTable}
 
-Logs too long to store in comment, review Workflow logs for more details.
+Some of the output of this terraform run was too long to store in comment. Review Workflow logs for more details or plan contents.
 
 *Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${
           process.env.GITHUB_EVENT_NAME
