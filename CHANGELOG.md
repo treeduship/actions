@@ -1,3 +1,19 @@
+# v1.5.2 (Thu Feb 17 2022)
+
+#### 🐛 Bug Fix
+
+- fix: comment calls not being awaited (rsimpon@uship.com)
+
+#### ⚠️ Pushed to `main`
+
+- Merge branch 'main' of github.com:uShip/actions (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.5.1 (Thu Feb 17 2022)
 
 #### 🐛 Bug Fix
