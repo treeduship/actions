@@ -41,14 +41,14 @@ export async function createOrUpdatePRComment({
 
   try {
     if (comment) {
-      octokit.rest.issues.updateComment({
+      await octokit.rest.issues.updateComment({
         owner,
         repo,
         comment_id: comment.id,
         body,
       });
     } else {
-      octokit.rest.issues.createComment({
+      await octokit.rest.issues.createComment({
         issue_number: prId,
         owner,
         repo,
