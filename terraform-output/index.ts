@@ -6,7 +6,7 @@ import { createOrUpdatePRComment } from "@uship/actions-helpers/comment";
 import { default as stripAnsi } from "strip-ansi";
 import split2 from "split2";
 import diff from "json-diff";
-import { createReadStream, existsSync } from "node:fs";
+import { createReadStream, existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { readFile } from "node:fs/promises";
 
@@ -253,11 +253,26 @@ async function run() {
     const token = getInput("token", { required: true });
     const octokit = getOctokit(token);
 
-    const steps = JSON.parse(getInput("steps", { required: true }));
+    const stepInput = getInput("steps");
+    const stepFile = getInput("steps-file");
+    if (!stepInput && !stepFile) {
+      throw new Error("You must provide one of steps or steps-file as input.");
+    }
+
+    let steps: any;
+    if (!!stepInput) {
+      steps = JSON.parse(stepInput);
+    } else {
+      if (!existsSync(stepFile)) {
+        throw new Error(`Unable to file steps file ${stepFile}`);
+      }
+      const contents = readFileSync(stepFile).toString();
+      steps = JSON.parse(contents);
+    }
 
     const tfSteps = new Map<string, TfStep | undefined>([
-      ["fmt", steps[getInput("fmt") || "fmt"]],
       ["init", steps[getInput("init") || "init"]],
+      ["fmt", steps[getInput("fmt") || "fmt"]],
       ["validate", steps[getInput("validate") || "validate"]],
       ["plan", steps[getInput("plan") || "plan"]],
       ["show", steps[getInput("show") || "show"]],

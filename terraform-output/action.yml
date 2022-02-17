@@ -5,8 +5,12 @@ branding:
   color: blue
 inputs:
   steps:
-    description: The steps object from github workflow context
-    required: true
+    description: The steps object from github workflow context. Either one of steps or steps-file must be provided
+    required: false
+  steps-file:
+    description: The steps object from github workflow context serialized into a file. Either one of steps or steps-file must be provided
+    required: false
+    default: workflow-steps.json.tmp
   json:
     description: Whether or not to look for json log files instead of stdout and stderr
     default: ""
