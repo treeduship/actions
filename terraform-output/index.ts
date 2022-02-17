@@ -249,6 +249,7 @@ ${stripAnsi(logContents)}
 
 async function run() {
   try {
+    const cwd = getInput("working-directory") ?? "./";
     const readJson = getInput("json") === "true";
     const token = getInput("token", { required: true });
     const octokit = getOctokit(token);
@@ -263,10 +264,11 @@ async function run() {
     if (!!stepInput) {
       steps = JSON.parse(stepInput);
     } else {
-      if (!existsSync(stepFile)) {
-        throw new Error(`Unable to file steps file ${stepFile}`);
+      let filePath = resolve(cwd, stepFile);
+      if (!existsSync(filePath)) {
+        throw new Error(`Unable to find encoded steps file at ${filePath}`);
       }
-      const contents = readFileSync(stepFile).toString();
+      const contents = readFileSync(filePath).toString();
       steps = JSON.parse(contents);
     }
 
@@ -279,7 +281,6 @@ async function run() {
     ]);
 
     const contextId = getInput("context");
-    const cwd = getInput("working-directory") ?? "./";
 
     const now = new Intl.DateTimeFormat("en-US", {
       dateStyle: "medium",
