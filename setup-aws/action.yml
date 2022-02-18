@@ -15,8 +15,16 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Parse Accounts
+      id: accounts
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const accounts = JSON.parse(`${{ inputs.accounts }}`);
+          const { id, name } = accounts[`${{ inputs.env }}`];
+          return { id, name };
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: arn:aws:iam::${{ fromJSON(inputs.accounts)[inputs.env]["id"] }}:role/github/all/${{ fromJSON(inputs.accounts)[inputs.env]["name"] }}-gha-deployer
+        role-to-assume: arn:aws:iam::${{ steps.accounts.outputs.result.id }}:role/github/all/${{ steps.accounts.outputs.result.id.name }}-gha-deployer
         aws-region: ${{ inputs.region }}
