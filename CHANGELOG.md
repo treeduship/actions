@@ -1,3 +1,15 @@
+# v1.5.5 (Fri Feb 18 2022)
+
+#### 🐛 Bug Fix
+
+- fix: parse result? (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.5.4 (Fri Feb 18 2022)
 
 #### 🐛 Bug Fix
