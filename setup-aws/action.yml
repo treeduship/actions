@@ -26,5 +26,5 @@ runs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: arn:aws:iam::${{ steps.accounts.outputs.result.id }}:role/github/all/${{ steps.accounts.outputs.result.id.name }}-gha-deployer
+        role-to-assume: arn:aws:iam::${{ fromJSON(steps.accounts.outputs.result)['id'] }}:role/github/all/${{ fromJSON(steps.accounts.outputs.result)['name'] }}-gha-deployer
         aws-region: ${{ inputs.region }}
