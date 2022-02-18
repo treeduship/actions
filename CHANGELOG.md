@@ -1,3 +1,15 @@
+# v1.5.6 (Fri Feb 18 2022)
+
+#### 🐛 Bug Fix
+
+- fix: allow specifying repo and deployer (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.5.5 (Fri Feb 18 2022)
 
 #### 🐛 Bug Fix
