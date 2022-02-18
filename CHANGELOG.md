@@ -1,3 +1,15 @@
+# v1.5.4 (Fri Feb 18 2022)
+
+#### 🐛 Bug Fix
+
+- fix: pre parse accounts information (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.5.3 (Thu Feb 17 2022)
 
 #### 🐛 Bug Fix
