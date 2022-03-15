@@ -1,3 +1,19 @@
+# v1.5.7 (Tue Mar 15 2022)
+
+#### 🐛 Bug Fix
+
+- fix: add id and name to setup-aws outputs (rsimpon@uship.com)
+
+#### ⚠️ Pushed to `main`
+
+- docs: add readme for setup-aws (rsimpon@uship.com)
+
+#### Authors: 1
+
+- Richard Simpson (rsimpon@uship.com)
+
+---
+
 # v1.5.6 (Fri Feb 18 2022)
 
 #### 🐛 Bug Fix
