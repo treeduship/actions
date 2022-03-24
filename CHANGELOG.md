@@ -1,3 +1,15 @@
+# v1.5.8 (Thu Mar 24 2022)
+
+#### ⚠️ Pushed to `main`
+
+- Update README.md ([@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 1
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+
+---
+
 # v1.5.7 (Tue Mar 15 2022)
 
 #### 🐛 Bug Fix
