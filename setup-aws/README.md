@@ -1,6 +1,37 @@
 # `uShip/actions/setup-aws`
 
-This action assists in authenticating a workflow with AWS using OIDC Auth.
+Very often, GitHub Workflows needs to deploy cloud resources to AWS. Either for serverless pipelines or otherwise. This action simplifies authenticating GitHub Workflows with AWS using the recently introduced [OIDC Support](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect) and AWS's own [credentials action](https://github.com/aws-actions/configure-aws-credentials).
+
+## Getting Started
+
+Any Workflow using this action first needs to grant the workflow a set of "permissions" saying it's allowed to mint an authentication token for authentication with AWS and other services.
+
+```yml
+permissions:
+  contents: read
+  id-token: write
+```
+
+The above does two things:
+* Grants the Workflow permission to read the Repositories contents
+* Grants the Workflow permission to "write" or create an `id-token` which will be consumed by this action implicitly
+
+_**IMPORTANT**: When you use `permissions`, it will cause all other non-specified permissions to be `none` by default. If your workflow does an action like commenting on a Pull Request or creating an issue, review the [permissions documentation](https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs) to ensure that you have assigned the correct permissions._
+
+Then, in the `steps` for the job doing AWS operations add:
+
+```yml     
+      - uses: uShip/actions/setup-aws@v1
+        with:
+          accounts: ${{ secrets.AWS_ACCOUNTS }}
+          env: dev
+```
+
+This action under the covers calls `aws-actions/configure-aws-credentials` with the correct role and information to authenticate for the environment specified in `env` with the default minimal role meant for basic serverless pipelines.
+
+With this, any following steps should now be authenticated with AWS! To authenticate with other accounts, simply change the value of `env` to the desired account.
+
+## Reference
 
 ```yml
 permissions:
@@ -21,6 +52,7 @@ permissions:
 
           # The target environment.
           # Defaults to dev
+          # Options are dev, qa, sand, prod
           # env: dev
 
           # The target region
