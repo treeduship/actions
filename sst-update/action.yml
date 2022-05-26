@@ -4,6 +4,7 @@ runs:
   using: composite
   steps:
     - uses: actions/github-script@v6
+      if: github.event.pull_request.user.login == 'renovate[bot]' && (contains(github.event.pull_request.title, 'serverless stack'))
       id: get-version
       with:
         result-encoding: string
@@ -11,10 +12,14 @@ runs:
           const packageJSON = require('fs').readFileSync(`${{ github.workspace }}/package.json`).toString();
           const packageFile = JSON.parse(packageJSON);
           return packageFile.dependencies?.['@serverless-stack/resources'] ?? packageFile.devDependencies?.['@serverless-stack/resources'];
+
     - name: Update SST and CDK to Latest Versions
+      if: github.event.pull_request.user.login == 'renovate[bot]' && (contains(github.event.pull_request.title, 'serverless stack'))
       shell: bash
       run: npx -p @serverless-stack/cli sst update ${{ steps.get-version.outputs.result }}
+
     - name: Commit updated dependencies
+      if: github.event.pull_request.user.login == 'renovate[bot]' && (contains(github.event.pull_request.title, 'serverless stack'))
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: >
