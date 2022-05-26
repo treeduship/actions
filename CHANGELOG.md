@@ -1,3 +1,27 @@
+# v1.6.0 (Thu May 26 2022)
+
+#### 🚀 Enhancement
+
+- feat: update sst action ([@RichiCoder1](https://github.com/RichiCoder1))
+
+#### ⚠️ Pushed to `main`
+
+- chore: put conditional in action itself ([@RichiCoder1](https://github.com/RichiCoder1))
+- chore: redo parts of sst-update action ([@RichiCoder1](https://github.com/RichiCoder1))
+- chore: fixup sst action ([@RichiCoder1](https://github.com/RichiCoder1))
+- chore: add debugging for workspace details ([@RichiCoder1](https://github.com/RichiCoder1))
+- chore: fix workspace syntax ([@RichiCoder1](https://github.com/RichiCoder1))
+- chore: log json ([@RichiCoder1](https://github.com/RichiCoder1))
+- chore: fix pathing ([@RichiCoder1](https://github.com/RichiCoder1))
+- chore: a small fix to contains logic ([@RichiCoder1](https://github.com/RichiCoder1))
+- chore: add sst bump workflow ([@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 1
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+
+---
+
 # v1.5.8 (Thu Mar 24 2022)
 
 #### ⚠️ Pushed to `main`
