@@ -1,10 +1,5 @@
 name: Serverless Stack Update
 description: Update serverless stack and CDK versions. Runs the `sst update` command and commits the results. Requires that `@serverless-stack/cli` be installed as a dependency.
-inputs:
-  working-directory:
-    description: Working directory for this action
-    required: false
-    default: ./
 runs:
   using: composite
   steps:
@@ -19,8 +14,6 @@ runs:
     - name: Update SST and CDK to Latest Versions
       shell: bash
       run: npx -p @serverless-stack/cli sst update ${{ steps.get-version.outputs.result }}
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     - name: Commit updated dependencies
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
