@@ -11,7 +11,8 @@ on:
       NODE_AUTH_TOKEN:
         required: true
 jobs:
-  reusable_workflow_job:
+  bump-sst-npm:
+    name: Sync SST Versions
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -23,8 +24,7 @@ jobs:
         with:
           result-encoding: string
           script: |
-            const packageJSON = require('fs').readFileSync(`${{ github.workspace}}/package.json``).toString();
-            console.log({ packageJSON });
+            const packageJSON = require('fs').readFileSync(`${{ github.workspace }}/package.json`).toString();
             const packageFile = JSON.parse(packageJSON);
             return packageFile.dependencies?.['@serverless-stack/resources'] ?? packageFile.devDependencies?.['@serverless-stack/resources'];
       - name: Update SST and CDK to Latest Versions
