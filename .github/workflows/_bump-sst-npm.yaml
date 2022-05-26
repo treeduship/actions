@@ -24,6 +24,7 @@ jobs:
           result-encoding: string
           script: |
             const packageJSON = require('fs').readFileSync(`${{ github.workspace}}/package.json``).toString();
+            console.log({ packageJSON });
             const packageFile = JSON.parse(packageJSON);
             return packageFile.dependencies?.['@serverless-stack/resources'] ?? packageFile.devDependencies?.['@serverless-stack/resources'];
       - name: Update SST and CDK to Latest Versions
