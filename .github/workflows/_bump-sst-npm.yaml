@@ -19,6 +19,7 @@ jobs:
       pull-requests: write
     if: inputs.actor == 'renovate[bot]' && (contains(inputs.pr-name, 'serverless stack') || contains(inputs.pr-name, 'sst'))
     steps:
+      - run: ls ${{ github.workspace }}
       - uses: actions/github-script@v6
         id: get-version
         with:
