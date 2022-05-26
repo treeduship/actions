@@ -1,5 +1,8 @@
 name: Serverless Stack Update
-description: Update serverless stack and CDK versions. Runs the `sst update` command and commits the results. Requires that `@serverless-stack/cli` be installed as a dependency.
+description: |
+  Update serverless stack and CDK versions. Runs the `sst update` command and commits the results. Requires that `@serverless-stack/cli` be installed as a dependency.
+
+  If you want to make sure the automatic commit kicks of a new build, be sure to checkout the repo with a non-default token with Write permissions to the Pull Request.
 runs:
   using: composite
   steps:
@@ -11,7 +14,7 @@ runs:
         script: |
           const packageJSON = require('fs').readFileSync(`${{ github.workspace }}/package.json`).toString();
           const packageFile = JSON.parse(packageJSON);
-          return packageFile.dependencies?.['@serverless-stack/resources'] ?? packageFile.devDependencies?.['@serverless-stack/resources'];
+          return packageFile.dependencies?.['@serverless-stack/cli'] ?? packageFile.devDependencies?.['@serverless-stack/cli'];
 
     - name: Update SST and CDK to Latest Versions
       if: github.event.pull_request.user.login == 'renovate[bot]' && (contains(github.event.pull_request.title, 'serverless stack'))
