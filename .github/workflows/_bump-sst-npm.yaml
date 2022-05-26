@@ -16,7 +16,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    if: inputs.actor == 'renovate[bot]' && (contains(inputs.pr-name, 'serverless-stack') || contains(inputs.pr-name, 'sst'))
+    if: inputs.actor == 'renovate[bot]' && (contains(inputs.pr-name, 'serverless stack') || contains(inputs.pr-name, 'sst'))
     steps:
       - uses: actions/github-script@v6
         id: get-version
