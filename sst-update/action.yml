@@ -1,10 +1,6 @@
 name: Serverless Stack Update
 description: Update serverless stack and CDK versions. Runs the `sst update` command and commits the results. Requires that `@serverless-stack/cli` be installed as a dependency.
 inputs:
-  version:
-    description: Version to update SST too
-    required: false
-    default: latest
   working-directory:
     description: Working directory for this action
     required: false
@@ -12,13 +8,21 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: SST Update to ${{ inputs.version }}
-      run: npm exec --package @serverless-stack/cli --no --offline sst update ${{ inputs.version }}
+    - uses: actions/github-script@v6
+      id: get-version
+      with:
+        result-encoding: string
+        script: |
+          const packageJSON = require('fs').readFileSync(`${{ github.workspace }}/package.json`).toString();
+          const packageFile = JSON.parse(packageJSON);
+          return packageFile.dependencies?.['@serverless-stack/resources'] ?? packageFile.devDependencies?.['@serverless-stack/resources'];
+    - name: Update SST and CDK to Latest Versions
       shell: bash
-      working-directory: ${{ inputs.working-directory }}
-    - name: Commit Updates
+      run: npx -p @serverless-stack/cli sst update ${{ steps.get-version.outputs.result }}
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    - name: Commit updated dependencies
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        commit_message: Update Serverless Stack to ${{ inputs.version }} and sync AWS CDK [actions skip]
-        file_pattern: >
-          "${{ inputs.working-directory }}package.json ${{ inputs.working-directory }}package-lock.json ${{ inputs.working-directory }}yarn.lock"
+        commit_message: >
+          chore(deps): update serverless stack to ${{ inputs.version }} and sync AWS CDK
