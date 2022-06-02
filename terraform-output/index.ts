@@ -1,14 +1,19 @@
 import { TooLongError } from "./../helpers/comment";
 import "source-map-support/register";
-import { getInput, setFailed, warning, error } from "@actions/core";
+import {
+  getInput,
+  setFailed,
+  warning,
+  summary as summaryBuilder,
+} from "@actions/core";
 import { getOctokit } from "@actions/github";
 import { createOrUpdatePRComment } from "@uship/actions-helpers/comment";
 import { default as stripAnsi } from "strip-ansi";
 import split2 from "split2";
-import diff from "json-diff";
 import { createReadStream, existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { readFile } from "node:fs/promises";
+import type { SummaryTableRow } from "@actions/core/lib/summary";
 
 interface TfStep {
   outcome: "success" | "failure";
@@ -22,8 +27,8 @@ interface TfStep {
 async function parseStdout(
   stepName: string,
   result?: any
-): Promise<{ table: string; stdout: string; stderr: string }> {
-  let table = "";
+): Promise<{ rows: SummaryTableRow[]; stdout: string; stderr: string }> {
+  let rows: SummaryTableRow[] = [];
   let stdout = "";
   let stderr = "";
   if (stepName === "plan" && result?.outcome == "success") {
@@ -49,19 +54,15 @@ async function parseStdout(
           .filter(([_, count]) => count > 0)
           .map(([icon, count]) => `${icon}${count}`)
           .join(", ");
-        table += `\n| \`${stepName}\` | ${countText}${
-          hasWarnings ? "*" : ""
-        } |`;
+        rows.push([stepName, `${countText}${hasWarnings ? "*" : ""}`]);
       } else {
-        table += `\n| \`${stepName}\` | 💬${hasWarnings ? "*" : ""} |`;
+        rows.push([stepName, `💬${hasWarnings ? "*" : ""}`]);
       }
     } else {
-      table += `\n| \`${stepName}\` | ➖${hasWarnings ? "*" : ""} |`;
+      rows.push([stepName, `➖${hasWarnings ? "*" : ""}`]);
     }
   } else {
-    table += `\n| \`${stepName}\` |  ${
-      result?.outcome == "success" ? "✔" : "✖"
-    }   |`;
+    rows.push([stepName, `${result?.outcome == "success" ? "✔" : "✖"}`]);
   }
 
   if (result?.outcome == "success") {
@@ -73,7 +74,7 @@ async function parseStdout(
   }
 
   return {
-    table,
+    rows,
     stdout,
     stderr,
   };
@@ -115,7 +116,7 @@ async function parseLog(
   stepName: string,
   result: any,
   logName: string
-): Promise<{ table: string; stdout: string; stderr: string }> {
+): Promise<{ rows: SummaryTableRow[]; stdout: string; stderr: string }> {
   if (!existsSync(logName)) {
     if (
       result?.outcome &&
@@ -124,7 +125,7 @@ async function parseLog(
     ) {
       warning(`Failed to read log file ${logName} for step ${stepName}.`);
       return {
-        table: `\n| \`${stepName}\` | ❌ |`,
+        rows: [[stepName, "❌"]],
         stdout: "",
         stderr:
           "Failed to read log file. Refer to step output in Workflow logs.",
@@ -144,13 +145,13 @@ async function parseLog(
         break;
     }
     return {
-      table: `\n| \`${stepName}\` | ${resultIcon} |`,
+      rows: [[stepName, resultIcon]],
       stdout: "",
       stderr: "",
     };
   }
 
-  let table = "";
+  let rows: SummaryTableRow[] = [];
   let stdout: string[] = [];
   let stderr: string[] = [];
   switch (stepName) {
@@ -193,9 +194,7 @@ async function parseLog(
               {
                 const { add, change, remove } = log.changes;
                 if (add + change + remove === 0) {
-                  table += `\n| \`${stepName}\` | ➖${
-                    hasWarnings ? "*" : ""
-                  } |`;
+                  rows.push([stepName, `➖${hasWarnings ? "*" : ""}`]);
                   continue;
                 }
 
@@ -209,9 +208,7 @@ async function parseLog(
                   .filter(([_, count]) => count > 0)
                   .map(([icon, count]) => `${icon}${count}`)
                   .join(", ");
-                table += `\n| \`${stepName}\` | ${countText}${
-                  hasWarnings ? "*" : ""
-                } |`;
+                rows.push([stepName, `${countText}${hasWarnings ? "*" : ""}`]);
               }
               break;
           }
@@ -234,14 +231,14 @@ ${stripAnsi(logContents)}
 
   if (result?.output === "failure") {
     return {
-      table: `\n| \`${stepName}\` | ❌ |`,
+      rows: [[stepName, "❌"]],
       stdout: stdout.join("\n"),
       stderr: stderr.join("\n"),
     };
   }
 
   return {
-    table,
+    rows,
     stdout: stdout.join("\n"),
     stderr: stderr.join("\n"),
   };
@@ -288,9 +285,17 @@ async function run() {
       timeZone: "America/Chicago",
     } as any).format(new Date());
 
-    let stepTable = `
-| cmd | result |
-|----|----|`;
+    const summary = summaryBuilder.addHeading(
+      `Terraform Output${contextId ? ` for ${contextId}` : ""}`,
+      2
+    );
+
+    const stepTable: SummaryTableRow[] = [
+      [
+        { data: "cmd", header: true },
+        { data: "result", header: true },
+      ],
+    ];
 
     let errorMessage = "";
     const stepResults = new Map<string, { stdout: string; stderr: string }>();
@@ -300,13 +305,15 @@ async function run() {
         continue;
       }
 
-      const { table, stdout, stderr } = readJson
+      const { rows, stdout, stderr } = readJson
         ? await parseLog(name, result, resolve(cwd, `${name}.log`))
         : await parseStdout(name, result);
-      stepTable += table;
+      stepTable.push(...rows);
       stepResults.set(name, { stdout, stderr });
       errorMessage += stderr + "\n";
     }
+
+    summary.addTable(stepTable);
 
     const planStep = stepResults.get("plan");
     const showStep = stepResults.get("show");
@@ -321,11 +328,9 @@ ${errorMessage?.trim() || "N/A"}
 \`\`\``;
     }
 
-    const body = `
-## Terraform Output${contextId ? ` for ${contextId}` : ""}
-${stepTable}
-
-<details><summary><b>Plan Output</b></summary>
+    summary.addDetails(
+      "<b>Plan Output</b>",
+      `
 ${showStep?.stdout}
 ## stdout:
 
@@ -336,17 +341,18 @@ ${
 }
 \`\`\`
 
-${errorMd}
-</details>
+${errorMd}`
+    );
 
-*Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${
-      process.env.GITHUB_EVENT_NAME
-    }\`, [Workflow: \`${process.env.GITHUB_WORKFLOW}\`](https://github.com/${
-      process.env.GITHUB_REPOSITORY
-    }/runs/${process.env.GITHUB_RUN_ID})*;
+    summary.addRaw(
+      `*Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${process.env.GITHUB_EVENT_NAME}\`, [Workflow: \`${process.env.GITHUB_WORKFLOW}\`](https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${process.env.GITHUB_RUN_ID})*;`,
+      true
+    );
+    summary.addBreak();
+    summary.addRaw(`<sup>Last Updated: ${now}</sup>`);
 
---------------
-<sup>Last Updated: ${now}</sup>`;
+    const body = summary.stringify();
+    await summary.write();
 
     const [owner, repo] = process.env.GITHUB_REPOSITORY!.split("/");
     const prId = Number.parseInt(getInput("pr-id", { required: true }), 10);
@@ -363,22 +369,26 @@ ${errorMd}
       });
     } catch (e) {
       if (e instanceof TooLongError) {
-        const fallbackBody = `
-## Terraform Output${contextId ? ` for ${contextId}` : ""}
-${stepTable}
+        const fallbackBody = summaryBuilder
+          .addHeading(
+            `Terraform Output${contextId ? ` for ${contextId}` : ""}`,
+            2
+          )
+          .addTable(stepTable)
+          .addEOL()
+          .addRaw(
+            `Some of the output of this terraform run was too long to store in comment. Review Workflow logs for more details or plan contents.`,
+            true
+          )
+          .addEOL()
+          .addRaw(
+            `*Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${process.env.GITHUB_EVENT_NAME}\`, [Workflow: \`${process.env.GITHUB_WORKFLOW}\`](https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${process.env.GITHUB_RUN_ID})*;`,
+            true
+          )
+          .addBreak()
+          .addRaw(`<sup>Last Updated: ${now}</sup>`)
+          .stringify();
 
-Some of the output of this terraform run was too long to store in comment. Review Workflow logs for more details or plan contents.
-
-*Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${
-          process.env.GITHUB_EVENT_NAME
-        }\`, [Workflow: \`${
-          process.env.GITHUB_WORKFLOW
-        }\`](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${
-          process.env.GITHUB_RUN_ID
-        })*;
-
---------------
-<sup>Last Updated: ${now}</sup>`;
         await createOrUpdatePRComment({
           owner,
           repo,
