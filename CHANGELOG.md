@@ -1,3 +1,15 @@
+# v1.7.0 (Thu Jun 02 2022)
+
+#### 🚀 Enhancement
+
+- feat: add summary support for terraform output ([@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 1
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+
+---
+
 # v1.6.0 (Thu May 26 2022)
 
 #### 🚀 Enhancement
