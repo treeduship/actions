@@ -350,12 +350,16 @@ ${
 ${errorMd}`
     );
 
-    summary.addRaw(
-      `*Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${process.env.GITHUB_EVENT_NAME}\`, [Workflow: \`${process.env.GITHUB_WORKFLOW}\`](https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${process.env.GITHUB_RUN_ID})*;`,
-      true
-    );
-    summary.addBreak();
-    summary.addRaw(`<sup>Last Updated: ${now}</sup>`);
+    summary
+      .addEOL()
+      .addRaw(
+        `*Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${process.env.GITHUB_EVENT_NAME}\`, [Workflow: \`${process.env.GITHUB_WORKFLOW}\`](https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${process.env.GITHUB_RUN_ID})*;`,
+        true
+      )
+      .addEOL()
+      .addSeparator()
+      .addEOL()
+      .addRaw(`<sup>Last Updated: ${now}</sup>`);
 
     const body = summary.stringify();
     await summary.write();
@@ -391,7 +395,9 @@ ${errorMd}`
             `*Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${process.env.GITHUB_EVENT_NAME}\`, [Workflow: \`${process.env.GITHUB_WORKFLOW}\`](https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${process.env.GITHUB_RUN_ID})*;`,
             true
           )
-          .addBreak()
+          .addEOL()
+          .addSeparator()
+          .addEOL()
           .addRaw(`<sup>Last Updated: ${now}</sup>`)
           .stringify();
 
