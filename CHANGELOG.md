@@ -1,3 +1,15 @@
+# v1.7.1 (Thu Jun 02 2022)
+
+#### 🐛 Bug Fix
+
+- fix: add new line to output and exempt safe log lines from warn ([@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 1
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+
+---
+
 # v1.7.0 (Thu Jun 02 2022)
 
 #### 🚀 Enhancement
