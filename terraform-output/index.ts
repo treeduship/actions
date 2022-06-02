@@ -165,9 +165,15 @@ async function parseLog(
           }
 
           if (!(logLine as string).startsWith("{")) {
-            warning(
-              `Assuming non-JSON line from log file ${logName} is error.\n${logLine}.`
-            );
+            if (
+              !["Releasing state lock"].some((exemptLine) =>
+                (logLine as string).includes(exemptLine)
+              )
+            ) {
+              warning(
+                `Assuming non-JSON line from log file ${logName} is error.\n${logLine}.`
+              );
+            }
             stderr.push(logLine);
             continue;
           }
@@ -325,7 +331,7 @@ async function run() {
 
 \`\`\`
 ${errorMessage?.trim() || "N/A"}
-\`\`\``;
+\`\`\`\n`;
     }
 
     summary.addDetails(
