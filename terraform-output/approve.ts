@@ -32,6 +32,15 @@ export async function approve(
     for (const review of reviews.data) {
       if (
         review.user?.login == "github-actions[bot]" &&
+        review.state == "CHANGES_REQUESTED"
+      ) {
+        core.info(
+          `Current user already requested changes for pull request #${prNumber}, auto approving disabled for pr.`
+        );
+        return;
+      }
+      if (
+        review.user?.login == "github-actions[bot]" &&
         review.commit_id == commit &&
         review.state == "APPROVED"
       ) {
