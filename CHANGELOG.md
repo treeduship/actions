@@ -1,3 +1,16 @@
+# v1.8.1 (Fri Jun 17 2022)
+
+#### 🐛 Bug Fix
+
+- fix: check for already requested correctly ([@RichiCoder1](https://github.com/RichiCoder1))
+- fix: don't auto approve if changes request by bot at any point ([@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 1
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+
+---
+
 # v1.8.0 (Fri Jun 17 2022)
 
 #### 🚀 Enhancement
