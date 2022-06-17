@@ -1,3 +1,15 @@
+# v1.8.0 (Fri Jun 17 2022)
+
+#### 🚀 Enhancement
+
+- feat: add pr approve feature for terraform action ([@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 1
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+
+---
+
 # v1.7.2 (Thu Jun 02 2022)
 
 #### 🐛 Bug Fix
