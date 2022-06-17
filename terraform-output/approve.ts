@@ -137,7 +137,7 @@ export async function requestChanges(
       if (
         review.user?.login == "github-actions[bot]" &&
         review.commit_id == commit &&
-        review.state == "REQUEST_CHANGES"
+        review.state == "CHANGES_REQUESTED"
       ) {
         core.debug(
           `Current user already requested changes for pull request #${prNumber}, nothing to do`
