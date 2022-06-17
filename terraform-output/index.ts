@@ -14,6 +14,7 @@ import { createReadStream, existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { readFile } from "node:fs/promises";
 import type { SummaryTableRow } from "@actions/core/lib/summary";
+import { approve, requestChanges } from "./approve";
 
 interface TfStep {
   outcome: "success" | "failure";
@@ -112,6 +113,8 @@ type TerraformUiJson =
   | TerraformChangeSummaryJson
   | TerraformDriftJson;
 
+let isPlanClean = false;
+
 async function parseLog(
   stepName: string,
   result: any,
@@ -201,9 +204,11 @@ async function parseLog(
                 const { add, change, remove } = log.changes;
                 if (add + change + remove === 0) {
                   rows.push([stepName, `➖${hasWarnings ? "*" : ""}`]);
+                  isPlanClean = !hasWarnings;
                   continue;
                 }
 
+                isPlanClean = false;
                 const countText = (
                   [
                     ["+", add],
@@ -366,6 +371,14 @@ ${errorMd}`
 
     const [owner, repo] = process.env.GITHUB_REPOSITORY!.split("/");
     const prId = Number.parseInt(getInput("pr-id", { required: true }), 10);
+
+    if (getInput("auto-approve").toLowerCase() == "true") {
+      if (isPlanClean) {
+        await approve(octokit, owner, repo, prId);
+      } else {
+        await requestChanges(octokit, owner, repo, prId);
+      }
+    }
 
     const context = `terraform-output${contextId}`;
     try {

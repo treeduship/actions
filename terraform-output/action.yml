@@ -43,6 +43,10 @@ inputs:
     description: Whether or not to fail on a previous step's failure
     default: "true"
     required: false
+  auto-approve:
+    description: Approve the PR if the plan is clean and there's no warnings
+    default: "false"
+    required: false
   context:
     description: A unique context id if you have multiple terraform output actions running.
     required: false
