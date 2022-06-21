@@ -16,7 +16,19 @@ The above does two things:
 * Grants the Workflow permission to read the Repositories contents
 * Grants the Workflow permission to "write" or create an `id-token` which will be consumed by this action implicitly
 
-_**IMPORTANT**: When you use `permissions`, it will cause all other non-specified permissions to be `none` by default. If your workflow does an action like commenting on a Pull Request or creating an issue, review the [permissions documentation](https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs) to ensure that you have assigned the correct permissions._
+> _**IMPORTANT**: When you use `permissions`, it will cause all other non-specified permissions to be `none` by default. If your workflow does an action like commenting on a Pull Request or creating an issue, review the [permissions documentation](https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs) to ensure that you have assigned the correct permissions._
+> 
+> For example: if you're using the `Gamesight/slack-workflow-status` action to post status updates to Slack, you'll need to add the following permission (which is normally given by default) to that job, like so:
+> 
+> ```yaml
+> # ...
+> jobs:
+> # ...
+>   slack-workflow-status:
+>     permissions:
+>       actions: read
+> # ...
+> ```
 
 Then, in the `steps` for the job doing AWS operations add:
 
