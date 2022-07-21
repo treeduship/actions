@@ -1,3 +1,15 @@
+# v1.8.2 (Thu Jul 21 2022)
+
+#### 🐛 Bug Fix
+
+- fix: ignore non-bots when doing approvals ([@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 1
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+
+---
+
 # v1.8.1 (Fri Jun 17 2022)
 
 #### 🐛 Bug Fix
