@@ -18,6 +18,11 @@ export async function approve(
     });
     const commit = pull_request.data.head.sha;
 
+    const isBot = pull_request.data.user!.login.includes("[bot]");
+    if (!isBot) {
+      core.debug(`Skipping PR ${prNumber} approval, is not a bot.`);
+    }
+
     core.debug(`Commit SHA is ${commit}`);
 
     core.debug(
@@ -121,6 +126,11 @@ export async function requestChanges(
       pull_number: prNumber,
     });
     const commit = pull_request.data.head.sha;
+
+    const isBot = pull_request.data.user!.login.includes("[bot]");
+    if (!isBot) {
+      core.debug(`Skipping PR ${prNumber} requestChanges, is not a bot.`);
+    }
 
     core.debug(`Commit SHA is ${commit}`);
 
