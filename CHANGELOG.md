@@ -1,3 +1,15 @@
+# v1.8.3 (Mon Jul 25 2022)
+
+#### 🐛 Bug Fix
+
+- fix: actually bail out of non-bots ([@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 1
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+
+---
+
 # v1.8.2 (Thu Jul 21 2022)
 
 #### 🐛 Bug Fix
