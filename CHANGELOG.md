@@ -1,3 +1,16 @@
+# v1.8.4 (Tue Aug 02 2022)
+
+#### 🐛 Bug Fix
+
+- Update README.md [#46](https://github.com/uShip/actions/pull/46) ([@treeduship](https://github.com/treeduship) [@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 2
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+- Trevor ([@treeduship](https://github.com/treeduship))
+
+---
+
 # v1.8.3 (Mon Jul 25 2022)
 
 #### 🐛 Bug Fix
