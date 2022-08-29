@@ -219,22 +219,30 @@ async function parseLog(
 
           if (log["@level"] == "error") {
             stderr.push(log["@message"]);
+            if (log.type === "diagnostic") {
+              stdout.push(`${log["@level"]}:   ${log.diagnostic.detail}`);
+              error(log.diagnostic.detail, {
+                title: log.diagnostic.summary,
+                file: resolve(cwd, log.diagnostic.range.filename),
+                startLine: log.diagnostic.range.start.line,
+                startColumn: log.diagnostic.range.start.column,
+                endLine: log.diagnostic.range.end.line,
+                endColumn: log.diagnostic.range.end.column,
+              });
+            }
           } else {
             stdout.push(`${log["@level"]}: ${log["@message"]}`);
             if (log.type === "diagnostic") {
               deprecations++;
               stdout.push(`${log["@level"]}:   ${log.diagnostic.detail}`);
-              (log.diagnostic.severity == "warning" ? warning : error)(
-                log.diagnostic.detail,
-                {
-                  title: log.diagnostic.summary,
-                  file: resolve(cwd, log.diagnostic.range.filename),
-                  startLine: log.diagnostic.range.start.line,
-                  startColumn: log.diagnostic.range.start.column,
-                  endLine: log.diagnostic.range.end.line,
-                  endColumn: log.diagnostic.range.end.column,
-                }
-              );
+              warning(log.diagnostic.detail, {
+                title: log.diagnostic.summary,
+                file: resolve(cwd, log.diagnostic.range.filename),
+                startLine: log.diagnostic.range.start.line,
+                startColumn: log.diagnostic.range.start.column,
+                endLine: log.diagnostic.range.end.line,
+                endColumn: log.diagnostic.range.end.column,
+              });
             }
           }
 
