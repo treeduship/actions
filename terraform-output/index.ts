@@ -89,6 +89,19 @@ interface TerraformUiJsonBase {
   ["type"]: string;
 }
 
+interface TerraformDiagnosticCodeSpan {
+  line: number;
+  column: number;
+  byte: number;
+}
+
+interface TerraformDiagnosticCodeRange {
+  filename: string;
+  start: TerraformDiagnosticCodeSpan;
+  end: TerraformDiagnosticCodeSpan;
+  snippet: any;
+}
+
 interface TerraformChangeSummaryJson extends TerraformUiJsonBase {
   type: "change_summary";
   changes: {
@@ -108,17 +121,29 @@ interface TerraformOutputsJson extends TerraformUiJsonBase {
   outputs: { [key: string]: any };
 }
 
+interface TerraformDiagnosticJson extends TerraformUiJsonBase {
+  type: "diagnostic";
+  diagnostic: {
+    severity: string;
+    summary: string;
+    detail: string;
+    range: TerraformDiagnosticCodeRange;
+  };
+}
+
 type TerraformUiJson =
   | TerraformOutputsJson
   | TerraformChangeSummaryJson
-  | TerraformDriftJson;
+  | TerraformDriftJson
+  | TerraformDiagnosticJson;
 
 let isPlanClean = false;
 
 async function parseLog(
   stepName: string,
   result: any,
-  logName: string
+  logName: string,
+  cwd: string
 ): Promise<{ rows: SummaryTableRow[]; stdout: string; stderr: string }> {
   if (!existsSync(logName)) {
     if (
@@ -162,6 +187,7 @@ async function parseLog(
       {
         let hasWarnings = false;
         const logStream = createReadStream(logName).pipe(split2());
+        let deprecations = 0;
         for await (const logLine of logStream) {
           if (((logLine as string) ?? "").trim() === "") {
             continue;
@@ -192,6 +218,18 @@ async function parseLog(
             stderr.push(log["@message"]);
           } else {
             stdout.push(`${log["@level"]}: ${log["@message"]}`);
+            if (log.type === "diagnostic") {
+              deprecations++;
+              stdout.push(`${log["@level"]}:   ${log.diagnostic.detail}`);
+              warning(log.diagnostic.detail, {
+                title: log.diagnostic.summary,
+                file: resolve(cwd, log.diagnostic.range.filename),
+                startLine: log.diagnostic.range.start.line,
+                startColumn: log.diagnostic.range.start.column,
+                endLine: log.diagnostic.range.end.line,
+                endColumn: log.diagnostic.range.end.column,
+              });
+            }
           }
 
           if (log["@level"] === "warning" || log.type === "resource_drift") {
@@ -317,7 +355,7 @@ async function run() {
       }
 
       const { rows, stdout, stderr } = readJson
-        ? await parseLog(name, result, resolve(cwd, `${name}.log`))
+        ? await parseLog(name, result, resolve(cwd, `${name}.log`), cwd)
         : await parseStdout(name, result);
       stepTable.push(...rows);
       stepResults.set(name, { stdout, stderr });
@@ -342,7 +380,7 @@ ${errorMessage?.trim() || "N/A"}
     summary.addDetails(
       "<b>Plan Output</b>",
       `
-${showStep?.stdout}
+${showStep?.stdout ?? ""}
 ## stdout:
 
 \`\`\`
