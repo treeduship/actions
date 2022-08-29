@@ -1,3 +1,15 @@
+# v1.9.2 (Mon Aug 29 2022)
+
+#### 🐛 Bug Fix
+
+- fix: properly handle error diagnostics ([@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 1
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+
+---
+
 # v1.9.1 (Mon Aug 29 2022)
 
 #### 🐛 Bug Fix
