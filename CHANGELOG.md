@@ -1,3 +1,15 @@
+# v1.9.0 (Mon Aug 29 2022)
+
+#### 🚀 Enhancement
+
+- feat: add deprecation support and fix undefined with no show ([@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 1
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+
+---
+
 # v1.8.4 (Tue Aug 02 2022)
 
 #### 🐛 Bug Fix
