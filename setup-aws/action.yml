@@ -39,7 +39,7 @@ runs:
           const { id, name } = accounts[`${{ inputs.env }}`];
           return { id, name };
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v1-node16
       with:
         role-to-assume: arn:aws:iam::${{ fromJSON(steps.accounts.outputs.result)['id'] }}:role/github/${{ inputs.repo }}/${{ fromJSON(steps.accounts.outputs.result)['name'] }}-${{ inputs.deployer }}-deployer
         aws-region: ${{ inputs.region }}
