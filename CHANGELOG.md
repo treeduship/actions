@@ -1,3 +1,15 @@
+# v1.9.3 (Wed Oct 19 2022)
+
+#### 🐛 Bug Fix
+
+- fix: use node 16 for configure-aws-credentials [#51](https://github.com/uShip/actions/pull/51) ([@ZebraFlesh](https://github.com/ZebraFlesh))
+
+#### Authors: 1
+
+- Zebra Flesh ([@ZebraFlesh](https://github.com/ZebraFlesh))
+
+---
+
 # v1.9.2 (Mon Aug 29 2022)
 
 #### 🐛 Bug Fix
