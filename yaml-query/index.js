@@ -14,16 +14,21 @@ const queryYaml = async (path, query) => {
   return value;
 };
 
-try {
-  const path = core.getInput('path');
-  const query = core.getInput('query');
-  const envKey = core.getInput('env-key');
-  console.log(`Path: ${path}`);
-  console.log(`query: ${query}`);
-  console.log(`envKey: ${envKey}`);
-  const value = queryYaml(path, query);
-  console.log(`Value: ${value}`);
-  core.exportVariable(envKey, value);
-} catch (e) {
-  core.setFailed(e.message);
+const action = async () => {
+  try {
+    const path = core.getInput('path');
+    const query = core.getInput('query');
+    const envKey = core.getInput('env-key');
+    console.log(`Path: ${path}`);
+    console.log(`query: ${query}`);
+    console.log(`envKey: ${envKey}`);
+    const value = await queryYaml(path, query);
+    console.log(`Value: ${value}`);
+    core.exportVariable(envKey, value);
+  } catch (e) {
+    core.setFailed(e.message);
+  }
 }
+
+action();
+
