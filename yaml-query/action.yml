@@ -1,0 +1,15 @@
+name: 'Yaml Query'
+description: 'Extract values from yaml files and populate environment variables with them.'
+inputs:
+  yaml-path:
+    description: 'The path to the yaml file to be queried'
+    required: true
+  yaml-query:
+    descrpition: 'A dot-notation query of the yaml file (e.g. `prop.array.0.subProp`)'
+    required: true
+  env-key:
+    descrpition: 'The key of the environment variable to populate with the value extracted from the yaml file'
+    required: true
+runs:
+  using: 'node16'
+  main: 'action.js'
