@@ -4,6 +4,7 @@ import {
   getInput,
   setFailed,
   warning,
+  error,
   summary as summaryBuilder,
 } from "@actions/core";
 import { getOctokit } from "@actions/github";
@@ -89,6 +90,19 @@ interface TerraformUiJsonBase {
   ["type"]: string;
 }
 
+interface TerraformDiagnosticCodeSpan {
+  line: number;
+  column: number;
+  byte: number;
+}
+
+interface TerraformDiagnosticCodeRange {
+  filename: string;
+  start: TerraformDiagnosticCodeSpan;
+  end: TerraformDiagnosticCodeSpan;
+  snippet: any;
+}
+
 interface TerraformChangeSummaryJson extends TerraformUiJsonBase {
   type: "change_summary";
   changes: {
@@ -108,17 +122,30 @@ interface TerraformOutputsJson extends TerraformUiJsonBase {
   outputs: { [key: string]: any };
 }
 
+interface TerraformDiagnosticJson extends TerraformUiJsonBase {
+  type: "diagnostic";
+  diagnostic: {
+    severity: "warning" | "error";
+    summary: string;
+    detail: string;
+    range: TerraformDiagnosticCodeRange;
+  };
+}
+
 type TerraformUiJson =
   | TerraformOutputsJson
   | TerraformChangeSummaryJson
-  | TerraformDriftJson;
+  | TerraformDriftJson
+  | TerraformDiagnosticJson;
 
 let isPlanClean = false;
+let isPlanErrored = false;
 
 async function parseLog(
   stepName: string,
   result: any,
-  logName: string
+  logName: string,
+  cwd: string
 ): Promise<{ rows: SummaryTableRow[]; stdout: string; stderr: string }> {
   if (!existsSync(logName)) {
     if (
@@ -162,6 +189,8 @@ async function parseLog(
       {
         let hasWarnings = false;
         const logStream = createReadStream(logName).pipe(split2());
+        let deprecations = 0;
+        let changeSummary: TerraformChangeSummaryJson | null = null;
         for await (const logLine of logStream) {
           if (((logLine as string) ?? "").trim() === "") {
             continue;
@@ -190,8 +219,31 @@ async function parseLog(
 
           if (log["@level"] == "error") {
             stderr.push(log["@message"]);
+            if (log.type === "diagnostic") {
+              stdout.push(`${log["@level"]}:   ${log.diagnostic.detail}`);
+              error(log.diagnostic.detail, {
+                title: log.diagnostic.summary,
+                file: resolve(cwd, log.diagnostic.range.filename),
+                startLine: log.diagnostic.range.start.line,
+                startColumn: log.diagnostic.range.start.column,
+                endLine: log.diagnostic.range.end.line,
+                endColumn: log.diagnostic.range.end.column,
+              });
+            }
           } else {
             stdout.push(`${log["@level"]}: ${log["@message"]}`);
+            if (log.type === "diagnostic") {
+              deprecations++;
+              stdout.push(`${log["@level"]}:   ${log.diagnostic.detail}`);
+              warning(log.diagnostic.detail, {
+                title: log.diagnostic.summary,
+                file: resolve(cwd, log.diagnostic.range.filename),
+                startLine: log.diagnostic.range.start.line,
+                startColumn: log.diagnostic.range.start.column,
+                endLine: log.diagnostic.range.end.line,
+                endColumn: log.diagnostic.range.end.column,
+              });
+            }
           }
 
           if (log["@level"] === "warning" || log.type === "resource_drift") {
@@ -200,28 +252,34 @@ async function parseLog(
 
           switch (log.type) {
             case "change_summary":
-              {
-                const { add, change, remove } = log.changes;
-                if (add + change + remove === 0) {
-                  rows.push([stepName, `➖${hasWarnings ? "*" : ""}`]);
-                  isPlanClean = !hasWarnings;
-                  continue;
-                }
-
-                isPlanClean = false;
-                const countText = (
-                  [
-                    ["+", add],
-                    ["~", change],
-                    ["-", remove],
-                  ] as const
-                )
-                  .filter(([_, count]) => count > 0)
-                  .map(([icon, count]) => `${icon}${count}`)
-                  .join(", ");
-                rows.push([stepName, `${countText}${hasWarnings ? "*" : ""}`]);
-              }
+              changeSummary = log;
               break;
+          }
+        }
+
+        if (changeSummary == null) {
+          isPlanClean = false;
+          isPlanErrored = true;
+          rows.push([stepName, "❌"]);
+        } else {
+          const { add, change, remove } = changeSummary.changes;
+          if (add + change + remove === 0) {
+            rows.push([stepName, `➖${hasWarnings ? "*" : ""}`]);
+            isPlanClean = !hasWarnings;
+          } else {
+            isPlanClean = false;
+            const countText = (
+              [
+                ["+", add],
+                ["~", change],
+                ["-", remove],
+                ["⚠️", deprecations],
+              ] as const
+            )
+              .filter(([_, count]) => count > 0)
+              .map(([icon, count]) => `${icon}${count}`)
+              .join(", ");
+            rows.push([stepName, `${countText}${hasWarnings ? "*" : ""}`]);
           }
         }
       }
@@ -230,7 +288,7 @@ async function parseLog(
       {
         const logContents = (await readFile(logName)).toString();
         stdout.push(`
-## plan
+## ${logContents.includes("error") ? "error" : "plan"}
 
 \`\`\`
 ${stripAnsi(logContents)}
@@ -317,7 +375,7 @@ async function run() {
       }
 
       const { rows, stdout, stderr } = readJson
-        ? await parseLog(name, result, resolve(cwd, `${name}.log`))
+        ? await parseLog(name, result, resolve(cwd, `${name}.log`), cwd)
         : await parseStdout(name, result);
       stepTable.push(...rows);
       stepResults.set(name, { stdout, stderr });
@@ -342,7 +400,7 @@ ${errorMessage?.trim() || "N/A"}
     summary.addDetails(
       "<b>Plan Output</b>",
       `
-${showStep?.stdout}
+${showStep?.stdout ?? ""}
 ## stdout:
 
 \`\`\`
@@ -358,7 +416,7 @@ ${errorMd}`
     summary
       .addEOL()
       .addRaw(
-        `*Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${process.env.GITHUB_EVENT_NAME}\`, [Workflow: \`${process.env.GITHUB_WORKFLOW}\`](https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${process.env.GITHUB_RUN_ID})*;`,
+        `*Pusher: @${process.env.GITHUB_ACTOR}, Action: \`${process.env.GITHUB_EVENT_NAME}\`, [Workflow: \`${process.env.GITHUB_WORKFLOW}\`](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})*;`,
         true
       )
       .addEOL()
@@ -435,6 +493,9 @@ ${errorMd}`
           );
         }
       });
+      if (isPlanErrored) {
+        setFailed(`Terraform step "plan" failed. See stderr for details.`);
+      }
     }
   } catch (e) {
     setFailed(e as Error);

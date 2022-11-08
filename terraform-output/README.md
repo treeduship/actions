@@ -32,6 +32,13 @@ This action assists in neatly formatting and presenting terraform plan, as well 
           # A unique id to differentiate between multiple terraform-output actions
           # Useful if a single pr may run multiple terraform plans
           context: ""
+          
+          # The working directory to execute action steps in, if this is a multi-workspace repository
+          working-directory: ""
+          
+          # Whether or not to "auto-approve" the Pull Request if a plan is clean. Useful for
+          # auto-merging dependencies
+          auto-approve: false
 ```
 
 <details><summary><b>Example Usage</b></summary>

@@ -1,3 +1,88 @@
+# v1.9.3 (Wed Oct 19 2022)
+
+#### 🐛 Bug Fix
+
+- fix: use node 16 for configure-aws-credentials [#51](https://github.com/uShip/actions/pull/51) ([@ZebraFlesh](https://github.com/ZebraFlesh))
+
+#### Authors: 1
+
+- Zebra Flesh ([@ZebraFlesh](https://github.com/ZebraFlesh))
+
+---
+
+# v1.9.2 (Mon Aug 29 2022)
+
+#### 🐛 Bug Fix
+
+- fix: properly handle error diagnostics ([@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 1
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+
+---
+
+# v1.9.1 (Mon Aug 29 2022)
+
+#### 🐛 Bug Fix
+
+- fix: properly handle error state for plan ([@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 1
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+
+---
+
+# v1.9.0 (Mon Aug 29 2022)
+
+#### 🚀 Enhancement
+
+- feat: add deprecation support and fix undefined with no show ([@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 1
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+
+---
+
+# v1.8.4 (Tue Aug 02 2022)
+
+#### 🐛 Bug Fix
+
+- Update README.md [#46](https://github.com/uShip/actions/pull/46) ([@treeduship](https://github.com/treeduship) [@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 2
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+- Trevor ([@treeduship](https://github.com/treeduship))
+
+---
+
+# v1.8.3 (Mon Jul 25 2022)
+
+#### 🐛 Bug Fix
+
+- fix: actually bail out of non-bots ([@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 1
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+
+---
+
+# v1.8.2 (Thu Jul 21 2022)
+
+#### 🐛 Bug Fix
+
+- fix: ignore non-bots when doing approvals ([@RichiCoder1](https://github.com/RichiCoder1))
+
+#### Authors: 1
+
+- Richard Simpson ([@RichiCoder1](https://github.com/RichiCoder1))
+
+---
+
 # v1.8.1 (Fri Jun 17 2022)
 
 #### 🐛 Bug Fix
