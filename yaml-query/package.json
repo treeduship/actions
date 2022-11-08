@@ -1,8 +1,10 @@
 {
   "name": "yaml-query",
-  "version": "1.0.0",
   "description": "A Github Action for populating environment variables with values queried from yaml files.",
   "main": "action.js",
+  "scripts": {
+    "build": "npx @vercel/ncc build -m index.js --license licenses.txt"
+  },
   "dependencies": {
     "@actions/core": "^1.10.0",
     "js-yaml": "^4.1.0"
