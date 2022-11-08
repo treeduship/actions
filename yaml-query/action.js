@@ -2,8 +2,7 @@ const fs = require('fs');
 const yaml = require('js-yaml');
 const core = require('@actions/core');
 
-
-export const queryYaml = async (path, query) => {
+const queryYaml = async (path, query) => {
   const json = await yaml.load(fs.readFileSync(path), 'utf8');
   const keys = query.split('.').filter(Boolean);
   let value = json;
