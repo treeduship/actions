@@ -14,10 +14,14 @@ const queryYaml = async (path, query) => {
 };
 
 try {
-  const path = core.getInput('yaml-path');
-  const query = core.getInput('yaml-query');
+  const path = core.getInput('path');
+  const query = core.getInput('query');
   const envKey = core.getInput('env-key');
+  console.log(`Path: ${path}`);
+  console.log(`query: ${query}`);
+  console.log(`envKey: ${envKey}`);
   const value = queryYaml(path, query);
+  console.log(`Value: ${path}`);
   core.exportVariable(envKey, value);
 } catch (e) {
   core.setFailed(e.message);
