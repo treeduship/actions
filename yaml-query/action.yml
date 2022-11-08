@@ -1,10 +1,10 @@
 name: 'Yaml Query'
 description: 'Extract values from yaml files and populate environment variables with them.'
 inputs:
-  yaml-path:
+  path:
     description: 'The path to the yaml file to be queried'
     required: true
-  yaml-query:
+  query:
     descrpition: 'A dot-notation query of the yaml file (e.g. `prop.array.0.subProp`)'
     required: true
   env-key:
