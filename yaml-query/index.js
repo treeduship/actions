@@ -8,6 +8,7 @@ const queryYaml = async (path, query) => {
   let value = json;
   for (let i = 0, l = keys.length; i < l && value; i++) {
     const key = keys[i];
+    console.log(`Getting property '${key}'...`);
     value = value[key];
   }
   return value;
@@ -21,7 +22,7 @@ try {
   console.log(`query: ${query}`);
   console.log(`envKey: ${envKey}`);
   const value = queryYaml(path, query);
-  console.log(`Value: ${path}`);
+  console.log(`Value: ${value}`);
   core.exportVariable(envKey, value);
 } catch (e) {
   core.setFailed(e.message);
